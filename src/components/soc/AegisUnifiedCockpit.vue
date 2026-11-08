@@ -178,7 +178,7 @@ const props = withDefaults(defineProps<{
   isDemo?: boolean;
 }>(), {
   initialView: 'dashboard',
-  isDemo: false,
+  isDemo: true,
 });
 
 // Replayer Sandbox Interactif (Mode Démo)

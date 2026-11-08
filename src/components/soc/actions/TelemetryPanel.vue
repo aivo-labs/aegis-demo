@@ -557,7 +557,7 @@ import { useTelemetry } from '../../../composables/useTelemetry';
 const props = withDefaults(defineProps<{
   isDemo?: boolean;
 }>(), {
-  isDemo: false,
+  isDemo: true,
 });
 
 const {

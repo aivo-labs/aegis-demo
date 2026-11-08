@@ -116,7 +116,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   initialTab: 'audit',
   initialDomain: '',
-  isDemo: false,
+  isDemo: true,
 });
 
 const emit = defineEmits<{
