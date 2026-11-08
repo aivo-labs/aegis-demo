@@ -1,0 +1,26 @@
+{
+  "name": "@aivo/aegis-web",
+  "type": "module",
+  "version": "4.2.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "test": "tsx --test test/*.test.ts"
+  },
+  "dependencies": {
+    "@astrojs/vue": "^5.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "astro": "^5.0.0",
+    "leaflet": "^1.9.4",
+    "tailwindcss": "^4.0.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.22",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.23.0",
+    "typescript": "^5.7.0"
+  }
+}

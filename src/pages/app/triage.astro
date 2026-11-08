@@ -1,0 +1,14 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AegisUnifiedCockpit from '../../components/soc/AegisUnifiedCockpit.vue';
+---
+
+<Layout 
+  title="Aegis Triage Kanban • Triage des Flux Entrants & Sortants (aegis.aivo.fr/app/triage)"
+  description="File de triage SOC en temps réel : classification par niveau de sévérité, inspection fine et journalisation conforme RGESN/ANSSI."
+  isApp={true}
+>
+  <main class="flex-1 flex flex-col w-full h-full">
+    <AegisUnifiedCockpit initialView="triage" client:only="vue" />
+  </main>
+</Layout>

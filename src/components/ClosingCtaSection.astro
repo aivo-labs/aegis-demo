@@ -1,0 +1,46 @@
+---
+// ClosingCtaSection.astro — CTA simple et direct avec i18n
+import { useTranslations, type Locale } from '../i18n/translations';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang).closingCta;
+---
+
+<section class="relative py-20 md:py-28 bg-[#080d1a] overflow-hidden border-t border-slate-800/80">
+  <div class="absolute inset-0 bg-radial-gradient from-emerald-500/10 via-transparent to-transparent pointer-events-none"></div>
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="p-8 sm:p-12 rounded-3xl bg-slate-900/85 border border-slate-800 shadow-2xl backdrop-blur-xl text-center space-y-6 relative overflow-hidden">
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400"></div>
+
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+        {t.title}
+      </h2>
+
+      <p class="text-sm sm:text-base text-slate-300 max-w-xl mx-auto leading-relaxed">
+        {t.desc}
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2 font-mono">
+        <a 
+          href={lang === 'fr' ? "/fr/get-started/" : "/get-started/"} 
+          class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-extrabold text-sm shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/35 transition-all active:scale-95 flex items-center justify-center gap-2"
+        >
+          <span>{t.getStarted}</span>
+          <span>➔</span>
+        </a>
+
+        <a 
+          href={lang === 'fr' ? "/fr/partenaires/#contact-partenaire" : "/partenaires/#contact-partenaire"} 
+          class="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white border border-slate-700 hover:border-emerald-500/40 font-bold text-sm transition-all flex items-center justify-center gap-2"
+        >
+          <span>{t.contactUs}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

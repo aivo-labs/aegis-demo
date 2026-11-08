@@ -1,0 +1,177 @@
+---
+// HeroLanding.astro — Hero Sobre & Centré selon FinalCut.md avec support i18n
+import AegisLogo from './AegisLogo.astro';
+import { useTranslations, type Locale } from '../i18n/translations';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang).hero;
+---
+
+<section class="relative pt-14 pb-20 md:pt-20 md:pb-28 overflow-hidden border-b border-slate-800/80">
+  <!-- Grille technique subtile et halo vert émeraude/menthe -->
+  <div class="absolute inset-0 bg-[linear-gradient(to_right,#10b9810c_1px,transparent_1px),linear-gradient(to_bottom,#10b9810c_1px,transparent_1px)] bg-[size:32px_32px] pointer-events-none"></div>
+  <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[680px] h-[340px] bg-gradient-to-tr from-emerald-500/12 via-teal-400/10 to-transparent blur-3xl pointer-events-none rounded-full"></div>
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="flex flex-col items-center text-center space-y-8">
+      
+      <!-- 1. LOGO OFFICIEL + NOM CENTRÉS AU-DESSUS DE LA PHRASE -->
+      <div class="flex flex-col items-center justify-center text-center space-y-3 sm:space-y-4">
+        <div class="flex items-center justify-center gap-3.5 sm:gap-5">
+          <AegisLogo size="xl" />
+          <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white leading-none">
+            Aegis
+          </h1>
+        </div>
+        <div class="text-xs sm:text-sm md:text-base font-mono uppercase tracking-[0.25em] text-emerald-400 font-semibold text-center">
+          {t.sub}
+        </div>
+      </div>
+
+      <!-- 2. PHRASE MAÎTRESSE EXACTE -->
+      <p class="text-base sm:text-xl text-slate-200 max-w-3xl mx-auto leading-relaxed font-normal" set:html={t.headline} />
+
+      <!-- 3. BLOC D'INSTALLATION RAPIDE SANS FIORITURES (CADRE ENGLOBANT GLASSMORPHISME) -->
+      <div class="w-full max-w-3xl rounded-3xl bg-slate-900/55 backdrop-blur-xl border border-emerald-500/30 p-5 sm:p-7 shadow-[0_20px_60px_-15px_rgba(16,185,129,0.18)] text-left">
+        <!-- Onglets de sélection du type d'installation -->
+        <div class="flex flex-wrap items-center justify-center sm:justify-between gap-2 pb-4 border-b border-slate-800/80">
+          <div class="flex flex-wrap items-center gap-1.5 text-xs font-mono bg-slate-950/80 p-1.5 rounded-2xl border border-slate-800/90 w-full sm:w-auto justify-center">
+            <button 
+              type="button" 
+              class="install-tab-btn px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-semibold transition-all cursor-pointer"
+              onclick="switchInstallTab('vps', this)"
+            >
+              {t.tabs.vps}
+            </button>
+            <button 
+              type="button" 
+              class="install-tab-btn px-3 py-1.5 rounded-xl text-slate-400 hover:text-slate-200 border border-transparent transition-all cursor-pointer"
+              onclick="switchInstallTab('baremetal', this)"
+            >
+              {t.tabs.baremetal}
+            </button>
+            <button 
+              type="button" 
+              class="install-tab-btn px-3 py-1.5 rounded-xl text-slate-400 hover:text-slate-200 border border-transparent transition-all cursor-pointer"
+              onclick="switchInstallTab('k8s', this)"
+            >
+              {t.tabs.k8s}
+            </button>
+            <button 
+              type="button" 
+              class="install-tab-btn px-3 py-1.5 rounded-xl text-slate-400 hover:text-slate-200 border border-transparent transition-all cursor-pointer"
+              onclick="switchInstallTab('git', this)"
+            >
+              {t.tabs.git}
+            </button>
+          </div>
+        </div>
+
+        <!-- Bloc contenant la commande d'installation avec le bouton Copier -->
+        <div class="mt-4 bg-slate-950/90 rounded-2xl p-4 sm:p-5 border border-slate-800/90 relative font-mono text-xs sm:text-sm flex items-center justify-between gap-4">
+          <div class="min-w-0 flex-1">
+            <div id="cmd-vps" class="install-cmd text-emerald-300 font-semibold select-all break-all">
+              curl -sSL https://aegis.aivo.fr/install.sh | sudo bash -s -- --profile vps
+            </div>
+            <div id="cmd-baremetal" class="install-cmd hidden text-teal-300 font-semibold select-all break-all">
+              curl -sSL https://aegis.aivo.fr/install.sh | sudo bash -s -- --profile baremetal
+            </div>
+            <div id="cmd-k8s" class="install-cmd hidden text-cyan-300 font-semibold select-all break-all">
+              curl -sSL https://aegis.aivo.fr/install.sh | bash -s -- --profile k8s
+            </div>
+            <div id="cmd-git" class="install-cmd hidden text-emerald-200 font-semibold select-all break-all">
+              git clone https://github.com/aivo-labs/aegis.git &amp;&amp; cd aegis &amp;&amp; docker compose up -d
+            </div>
+          </div>
+
+          <button 
+            type="button" 
+            id="copy-btn"
+            data-copied-text={t.copied}
+            onclick="copyInstallCommand(this)"
+            class="shrink-0 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-emerald-300 border border-slate-700/80 transition-all flex items-center gap-1.5 text-xs font-mono cursor-pointer"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            </svg>
+            <span id="copy-text">{t.copy}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4. BANDEAU DE RÉASSURANCE / TRUST PROOFS (LES 4 ÉLÉMENTS) -->
+      <div class="w-full pt-4 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono text-slate-400">
+        <div class="flex items-center justify-center gap-2.5 p-3.5 rounded-2xl bg-slate-900/45 border border-slate-800/70 backdrop-blur-sm">
+          <span class="text-base">🇪🇺</span>
+          <div class="text-left">
+            <div class="text-white font-bold">{t.proofs.sovereign}</div>
+            <div class="text-[10px] text-slate-500">{t.proofs.sovereignSub}</div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-center gap-2.5 p-3.5 rounded-2xl bg-slate-900/45 border border-slate-800/70 backdrop-blur-sm">
+          <span class="text-base">⚖️</span>
+          <div class="text-left">
+            <div class="text-white font-bold">{t.proofs.open}</div>
+            <div class="text-[10px] text-slate-500">{t.proofs.openSub}</div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-center gap-2.5 p-3.5 rounded-2xl bg-slate-900/45 border border-slate-800/70 backdrop-blur-sm">
+          <span class="text-base">🌿</span>
+          <div class="text-left">
+            <div class="text-white font-bold">{t.proofs.esg}</div>
+            <div class="text-[10px] text-slate-500">{t.proofs.esgSub}</div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-center gap-2.5 p-3.5 rounded-2xl bg-slate-900/45 border border-slate-800/70 backdrop-blur-sm">
+          <span class="text-base">🛡️</span>
+          <div class="text-left">
+            <div class="text-white font-bold">{t.proofs.anssi}</div>
+            <div class="text-[10px] text-slate-500">{t.proofs.anssiSub}</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  function switchInstallTab(type, btnElement) {
+    document.querySelectorAll('.install-tab-btn').forEach(btn => {
+      btn.classList.remove('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40');
+      btn.classList.add('text-slate-400', 'border-transparent');
+    });
+    btnElement.classList.add('bg-emerald-500/20', 'text-emerald-300', 'border-emerald-500/40');
+    btnElement.classList.remove('text-slate-400', 'border-transparent');
+
+    document.querySelectorAll('.install-cmd').forEach(cmd => cmd.classList.add('hidden'));
+    const targetCmd = document.getElementById('cmd-' + type);
+    if (targetCmd) targetCmd.classList.remove('hidden');
+  }
+
+  function copyInstallCommand(btnElement) {
+    const activeCmd = document.querySelector('.install-cmd:not(.hidden)');
+    if (!activeCmd) return;
+
+    const textToCopy = activeCmd.innerText.trim();
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      const copyText = document.getElementById('copy-text');
+      const originalText = copyText.innerText;
+      const copiedMsg = btnElement.getAttribute('data-copied-text') || 'Copied!';
+      copyText.innerText = copiedMsg;
+      copyText.classList.add('text-emerald-400');
+
+      setTimeout(() => {
+        copyText.innerText = originalText;
+        copyText.classList.remove('text-emerald-400');
+      }, 2000);
+    });
+  }
+</script>

@@ -1,0 +1,7 @@
+Contact: mailto:security@aivo.fr
+Expires: 2027-12-31T23:59:59.000Z
+Preferred-Languages: fr, en
+Canonical: https://aegis.aivo.fr/.well-known/security.txt
+Policy: https://aegis.aivo.fr/fr/legal/
+Hiring: https://aivo.fr/
+Acknowledgment: https://aegis.aivo.fr/fr/partenaires/

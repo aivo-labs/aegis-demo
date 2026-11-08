@@ -1,0 +1,50 @@
+---
+// AegisFaqSection.astro — Foire Aux Questions Technique & Décisionnelle avec i18n
+import { useTranslations, type Locale } from '../i18n/translations';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang).faq;
+const faqs = t.items;
+---
+
+<section class="relative py-20 md:py-32 bg-slate-900/40 border-b border-slate-800/80">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    
+    <div class="text-center mb-16 space-y-3">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-mono text-xs">
+        <span>{t.badge}</span>
+      </div>
+      <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+        {t.title}
+      </h2>
+      <p class="text-sm sm:text-base text-slate-400">
+        {t.desc}
+      </p>
+    </div>
+
+    <!-- Accordéon FAQ natif accessible -->
+    <div class="space-y-4">
+      {faqs.map((faq, index) => (
+        <details class="group bg-slate-950 border border-slate-800 hover:border-slate-700/80 rounded-2xl p-6 transition-all duration-200 open:bg-slate-900/90 open:border-cyan-500/40 shadow-lg">
+          <summary class="flex items-center justify-between gap-4 font-bold text-white text-base cursor-pointer list-none select-none">
+            <span class="flex items-center gap-3">
+              <span class="text-cyan-400 font-mono text-xs">0{index + 1}.</span>
+              <span>{faq.q}</span>
+            </span>
+            <span class="text-slate-500 group-open:rotate-180 group-open:text-cyan-400 transition-transform duration-200 text-lg">
+              ↓
+            </span>
+          </summary>
+          <div class="mt-4 pt-4 border-t border-slate-800/80 text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+            {faq.a}
+          </div>
+        </details>
+      ))}
+    </div>
+
+  </div>
+</section>

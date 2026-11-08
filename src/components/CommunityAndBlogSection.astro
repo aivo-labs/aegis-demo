@@ -1,0 +1,232 @@
+---
+// CommunityAndBlogSection.astro — Hub Communautaire & Derniers Articles de Blog avec i18n
+import { useTranslations, type Locale } from '../i18n/translations';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'en' } = Astro.props;
+const t = useTranslations(lang).community;
+---
+
+<section class="relative py-20 md:py-32 bg-slate-950 border-b border-slate-800/80 overflow-hidden">
+  <!-- Repères de fond -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-20">
+    
+    <!-- 1. HUB COMMUNAUTAIRE (GitHub, Discord, Substack) -->
+    <div>
+      <div class="text-center max-w-3xl mx-auto mb-12 space-y-3">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 font-mono text-xs">
+          <span>{t.badge}</span>
+        </div>
+        <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+          {t.title}
+        </h2>
+        <p class="text-sm sm:text-base text-slate-400">
+          {t.desc}
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- CARTE GITHUB -->
+        <a 
+          href="https://github.com/aivo-labs/aegis" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-cyan-500/50 shadow-xl transition-all group flex flex-col justify-between"
+        >
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-white text-2xl group-hover:scale-105 transition-transform">
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+              </div>
+              <span class="text-xs font-mono px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-semibold">
+                ★ v1.0-beta
+              </span>
+            </div>
+
+            <div class="space-y-1">
+              <h3 class="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">
+                {t.githubTitle}
+              </h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                {t.githubDesc}
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-4 mt-6 border-t border-slate-800 flex items-center justify-between text-xs font-mono text-cyan-400">
+            <span>github.com/aivo-labs/aegis</span>
+            <span>↗</span>
+          </div>
+        </a>
+
+        <!-- CARTE DISCORD -->
+        <a 
+          href="https://discord.gg/52vaQx6M5F" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-purple-500/50 shadow-xl transition-all group flex flex-col justify-between"
+        >
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-purple-400 text-2xl group-hover:scale-105 transition-transform font-bold">
+                💬
+              </div>
+              <span class="text-xs font-mono px-2.5 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 font-semibold">
+                {t.discordBadge}
+              </span>
+            </div>
+
+            <div class="space-y-1">
+              <h3 class="text-lg font-bold text-white group-hover:text-purple-400 transition-colors">
+                {t.discordTitle}
+              </h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                {t.discordDesc}
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-4 mt-6 border-t border-slate-800 flex items-center justify-between text-xs font-mono text-purple-400">
+            <span>discord.gg/52vaQx6M5F</span>
+            <span>↗</span>
+          </div>
+        </a>
+
+        <!-- CARTE SUBSTACK -->
+        <a 
+          href="https://aivo.substack.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 shadow-xl transition-all group flex flex-col justify-between"
+        >
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="w-12 h-12 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center text-emerald-400 text-2xl group-hover:scale-105 transition-transform">
+                ✉️
+              </div>
+              <span class="text-xs font-mono px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+                {t.substackBadge}
+              </span>
+            </div>
+
+            <div class="space-y-1">
+              <h3 class="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">
+                {t.substackTitle}
+              </h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                {t.substackDesc}
+              </p>
+            </div>
+          </div>
+
+          <div class="pt-4 mt-6 border-t border-slate-800 flex items-center justify-between text-xs font-mono text-emerald-400">
+            <span>{t.substackSubscribe}</span>
+            <span>↗</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- 2. LES DERNIERS ARTICLES DE BLOG -->
+    <div class="pt-8">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10">
+        <div>
+          <div class="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">{t.blogHeader}</div>
+          <h3 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+            {t.blogTitle}
+          </h3>
+        </div>
+        <a 
+          href="https://aivo.fr/blog" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="text-xs font-mono text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5 font-bold"
+        >
+          <span>{t.blogAll}</span>
+          <span>➔</span>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- ARTICLE 1 : NIS 2 & Norme VS -->
+        <article class="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-cyan-400 border border-slate-700/60">{t.article1Category}</span>
+              <span>{t.article1ReadTime}</span>
+            </div>
+            <h4 class="text-base font-bold text-white hover:text-cyan-400 transition-colors leading-snug">
+              {t.article1Title}
+            </h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              {t.article1Desc}
+            </p>
+          </div>
+          <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-500">{t.byAuthor}</span>
+            <a href="https://aivo.fr/blog/directive-nis2-norme-vs-pme" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1">
+              <span>{t.readArticle}</span>
+              <span>➔</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- ARTICLE 2 : RAPL vs Ratios -->
+        <article class="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-emerald-400 border border-slate-700/60">{t.article2Category}</span>
+              <span>{t.article2ReadTime}</span>
+            </div>
+            <h4 class="text-base font-bold text-white hover:text-emerald-400 transition-colors leading-snug">
+              {t.article2Title}
+            </h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              {t.article2Desc}
+            </p>
+          </div>
+          <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-500">{t.byAuthor}</span>
+            <a href="https://aivo.fr/blog/mesure-physique-rapl-vs-ratios-monetaires" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1">
+              <span>{t.readArticle}</span>
+              <span>➔</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- ARTICLE 3 : SaaS Tax -->
+        <article class="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-purple-400 border border-slate-700/60">{t.article3Category}</span>
+              <span>{t.article3ReadTime}</span>
+            </div>
+            <h4 class="text-base font-bold text-white hover:text-purple-400 transition-colors leading-snug">
+              {t.article3Title}
+            </h4>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              {t.article3Desc}
+            </p>
+          </div>
+          <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
+            <span class="text-slate-500">{t.byAuthor}</span>
+            <a href="https://aivo.fr/blog/la-saas-tax-etouffe-les-pme" target="_blank" rel="noopener noreferrer" class="text-purple-400 hover:text-purple-300 font-semibold flex items-center gap-1">
+              <span>{t.readArticle}</span>
+              <span>➔</span>
+            </a>
+          </div>
+        </article>
+
+      </div>
+    </div>
+
+  </div>
+</section>

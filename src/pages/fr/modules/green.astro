@@ -1,0 +1,132 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+---
+
+<Layout 
+  title="Aegis Green • Télémétrie Énergétique & Norme VS EFRAG | Aegis"
+  description="Mesurez la consommation réelle de vos serveurs (Watts, Joules RAPL) et automatisez vos rapports RSE en un clic selon la norme européenne VS (EFRAG)."
+  lang="fr"
+>
+  <main class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-16">
+    
+    <!-- Hero Section Module 3 -->
+    <div class="text-center max-w-4xl mx-auto space-y-6 pt-6">
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono uppercase tracking-widest">
+        <span>🌿 AEGIS GREEN • REAL-TIME ENERGY TELEMETRY &amp; RSE COMPLIANCE</span>
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl font-extrabold text-white tracking-tight leading-tight">
+        Mesurez la consommation réelle de vos serveurs et automatisez vos rapports RSE en un clic.
+      </h1>
+
+      <p class="text-slate-300 text-base sm:text-lg leading-relaxed max-w-3xl mx-auto">
+        Le premier module de pilotage énergétique qui capte l'électricité consommée au niveau matériel (Watts, Joules) et convertit vos données d'infrastructures en indicateurs normés <strong>VS (EFRAG)</strong> et <strong>RGESN 2024</strong> — <strong>sans passer des mois sur des tableurs Excel manuels.</strong>
+      </p>
+
+      <div class="flex flex-wrap justify-center gap-4 pt-2">
+        <a href="/fr/get-started/" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-400 to-emerald-400 text-slate-950 font-bold text-sm shadow-lg">
+          🧪 Lancer un audit d'éco-conception web (Gratuit)
+        </a>
+        <a href="#scaphandre-specs" class="px-6 py-3 rounded-xl bg-slate-900 text-white font-bold text-sm border border-slate-700">
+          📚 Spécifications Scaphandre RAPL
+        </a>
+      </div>
+    </div>
+
+    <!-- Metaphore Décideur & Tableau Comparatif -->
+    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-8 backdrop-blur-xl space-y-8">
+      <div>
+        <h2 class="text-xl font-bold text-amber-300 mb-2 font-mono">💡 LE COMPTEUR LINKY DE VOTRE INFORMATIQUE</h2>
+        <blockquote class="text-slate-200 text-base italic border-l-4 border-amber-400 pl-4 py-1">
+          Jusqu'à présent, calculer l'empreinte carbone de son informatique relevait du devinement : on multipliait le nombre d'ordinateurs par des moyennes statistiques floues. <strong>Aegis Green agit comme un compteur Linky ultra-précis directement branché sur le processeur de vos serveurs</strong>. Il mesure exactement les Joules et les Watts consommés par chaque application, puis génère automatiquement votre rapport RSE conforme aux exigences de vos banques et donneurs d'ordres.
+        </blockquote>
+      </div>
+
+      <!-- Comparative Table -->
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs font-mono">
+          <thead>
+            <tr class="border-b border-slate-800 bg-slate-950 text-slate-400">
+              <th class="p-4">Enjeu RSE &amp; Conformité</th>
+              <th class="p-4">Bilans Carbone Classiques (Tableurs / SaaS Théoriques)</th>
+              <th class="p-4">Avec Aegis Green (Télémétrie Physico-Matérielle)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60">
+            <tr>
+              <td class="p-4 font-bold text-white">Précision des données</td>
+              <td class="p-4 text-slate-400">Ratios monétaires théoriques ("1 € dépensé = X kg CO2") imprécis.</td>
+              <td class="p-4 text-emerald-400 font-bold">Mesure physique directe en Watts &amp; Joules via registres RAPL &amp; eBPF.</td>
+            </tr>
+            <tr>
+              <td class="p-4 font-bold text-white">Temps passé par les équipes</td>
+              <td class="p-4 text-rose-400">Des dizaines d'heures perdues à collecter des factures et remplir des tableaux.</td>
+              <td class="p-4 text-amber-300 font-bold">100 % Automatisé : Collecte continue en tâche de fond sans intervention.</td>
+            </tr>
+            <tr>
+              <td class="p-4 font-bold text-white">Réponse à la norme VS (EFRAG)</td>
+              <td class="p-4 text-slate-400">Reporting manuel complexe et difficile à justifier auprès des auditeurs.</td>
+              <td class="p-4 text-emerald-400 font-bold">Génération en 1 clic du volet Environnemental E3 (Sobriété Numérique) normé EFRAG.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3 Pillars Architecture -->
+    <div class="space-y-6">
+      <h2 class="text-2xl font-bold text-white text-center">⚙️ Les 3 Piliers d'Innovation Aegis Green</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <div class="text-amber-300 font-bold mb-2">1. CAPTURE MATÉRIELLE BAS NIVEAU</div>
+          <p class="text-slate-300 leading-relaxed">
+            Interrogation directe des registres <strong>RAPL (CPU/RAM)</strong> et sondes eBPF via l'agent Rust Scaphandre (&lt; 15 Mo RAM).
+          </p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <div class="text-emerald-400 font-bold mb-2">2. ENGINE VS (EFRAG) &amp; RGESN</div>
+          <p class="text-slate-300 leading-relaxed">
+            Conversion des Watts en gCO2e (Base ADEME / Boavizta) et contrôle automatique des critères d'éco-conception RGESN 2024.
+          </p>
+        </div>
+
+        <div class="bg-slate-900 border border-cyan-500/40 rounded-2xl p-6">
+          <div class="text-cyan-400 font-bold mb-2">3. PILOTAGE CARBON-AWARE (ECOWATT)</div>
+          <p class="text-slate-300 leading-relaxed">
+            Connexion aux API <strong>RTE EcoWatt</strong> pour décaler dynamiquement les calculs lourds pendant les pics d'électricité verte.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tech Specs Snippet -->
+    <div id="scaphandre-specs" class="bg-slate-950 border border-slate-800 rounded-2xl p-6 font-mono text-xs">
+      <div class="text-slate-400 mb-3">// docker-compose.aegis-green-telemetry.yml</div>
+      <pre is:raw class="text-amber-300 overflow-x-auto">
+version: '3.8'
+services:
+  aegis-scaphandre-agent:
+    image: hubblo/scaphandre:latest
+    container_name: aegis_green_scaphandre
+    volumes:
+      - /proc:/proc
+      - /sys/class/powercap:/sys/class/powercap
+    deploy:
+      resources:
+        limits:
+          memory: 15M # Empreinte RAM ultra-frugale certifiée RGESN 2024
+      </pre>
+    </div>
+
+    <!-- Final CTA -->
+    <div class="text-center bg-slate-900 border border-slate-800 rounded-3xl p-8">
+      <h3 class="text-2xl font-bold text-white mb-4">Prêt à mesurer votre empreinte réelle et valider la norme VS ?</h3>
+      <a href="/fr/get-started/" class="inline-block px-8 py-4 rounded-xl bg-gradient-to-r from-amber-400 to-emerald-400 text-slate-950 font-extrabold text-sm shadow-xl">
+        🌿 Lancer l'audit d'éco-conception
+      </a>
+    </div>
+
+  </main>
+</Layout>

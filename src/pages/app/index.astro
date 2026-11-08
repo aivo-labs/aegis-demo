@@ -1,0 +1,15 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import AegisUnifiedCockpit from '../../components/soc/AegisUnifiedCockpit.vue';
+---
+
+<Layout 
+  title="Aegis Unified Cockpit • Supervision SOC & ESG Souverain (aegis.aivo.fr/app)"
+  description="Cockpit unifié de supervision de cybersécurité Zero-Trust et de pilotage énergétique ESG conforme aux normes VS EFRAG, RGESN 2024 et ANSSI."
+  isApp={true}
+>
+  <main class="flex-1 flex flex-col w-full h-full min-h-0 overflow-hidden">
+    <AegisUnifiedCockpit client:only="vue" />
+  </main>
+</Layout>
+

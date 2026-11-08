@@ -1,0 +1,3 @@
+# Cloudflare Pages edge redirects & rewrites
+# Rewrite root path to /demo so demo.aegis.aivo.fr immediately serves the Sandbox Cockpit
+/   /demo   200

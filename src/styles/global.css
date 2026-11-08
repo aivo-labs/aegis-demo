@@ -1,0 +1,293 @@
+@import "tailwindcss";
+
+/* Densité d'affichage optimale & typographie compacte haute lisibilité (~81% du standard) */
+html {
+  font-size: 13px;
+  -webkit-text-size-adjust: 100%;
+}
+
+@media (min-width: 1536px) {
+  html {
+    font-size: 13.5px;
+  }
+}
+
+/* =============================================================================
+   AEGIS DESIGN SYSTEM — MODE CLAIR PREMIUM & HAUTE LISIBILITÉ
+   Harmonisation complète pour toutes les pages (Landing & Cockpit SOC)
+   ============================================================================= */
+
+html.theme-light {
+  color-scheme: light;
+}
+
+/* 1. Surfaces Globales & Document */
+html.theme-light,
+html.theme-light body {
+  background-color: #f8fafc !important; /* slate-50 */
+  color: #0f172a !important; /* slate-900 */
+}
+
+/* 2. En-têtes, Pieds de page & Barre Latérale */
+html.theme-light header {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04);
+}
+
+html.theme-light footer {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+html.theme-light aside {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 2px 0 8px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* 3. Arrière-plans de page sombres -> Arrière-plan clair doux */
+html.theme-light .bg-\[\#0a0f1d\],
+html.theme-light .bg-\[\#0a0f1d\]\/90,
+html.theme-light .bg-\[\#090e1a\],
+html.theme-light .bg-\[\#090e1a\]\/90,
+html.theme-light .bg-\[\#080d1a\],
+html.theme-light .bg-\[\#080d18\],
+html.theme-light .bg-\[\#070b14\],
+html.theme-light .bg-\[\#060a12\] {
+  background-color: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* 4. Cartes Principales & Panneaux Élevés (Cartes blanches épurées) */
+html.theme-light .bg-slate-900,
+html.theme-light .bg-slate-900\/95,
+html.theme-light .bg-slate-900\/90,
+html.theme-light .bg-slate-900\/85,
+html.theme-light .bg-slate-900\/80,
+html.theme-light .bg-slate-900\/70,
+html.theme-light .bg-slate-900\/60,
+html.theme-light .bg-slate-900\/55,
+html.theme-light .bg-slate-900\/50,
+html.theme-light .bg-slate-900\/45,
+html.theme-light .bg-slate-900\/40,
+html.theme-light .bg-slate-950\/95,
+html.theme-light .bg-slate-950\/90,
+html.theme-light .bg-slate-950\/80,
+html.theme-light .bg-slate-950\/70,
+html.theme-light .bg-slate-950\/60,
+html.theme-light .bg-slate-950\/50,
+html.theme-light .bg-slate-950\/40 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+}
+
+/* 5. Surfaces en Creux, Puits, Lignes de Tableau & Encadrés Internes (Slate-100) */
+html.theme-light .bg-slate-950,
+html.theme-light .bg-slate-850,
+html.theme-light .bg-slate-800,
+html.theme-light .bg-slate-800\/90,
+html.theme-light .bg-slate-800\/80,
+html.theme-light .bg-slate-800\/40,
+html.theme-light .bg-slate-800\/30 {
+  background-color: #f1f5f9 !important; /* slate-100 */
+  border-color: #cbd5e1 !important; /* slate-300 */
+  color: #0f172a !important;
+}
+
+html.theme-light .bg-slate-700 {
+  background-color: #e2e8f0 !important; /* slate-200 */
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* 6. Typographie & Niveaux de Contraste */
+html.theme-light .text-white,
+html.theme-light .text-slate-100,
+html.theme-light .text-slate-200 {
+  color: #0f172a !important; /* Titres & textes majeurs : slate-900 */
+}
+
+html.theme-light .text-slate-300 {
+  color: #334155 !important; /* Sous-titres : slate-700 */
+}
+
+html.theme-light .text-slate-400 {
+  color: #475569 !important; /* Corps de texte : slate-600 */
+}
+
+html.theme-light .text-slate-500 {
+  color: #64748b !important; /* Métadonnées : slate-500 */
+}
+
+/* 7. Badges d'États & Rétention de Contraste (Normes WCAG AAA) */
+/* Vert / Émeraude (Conforme, Actif, Éco-index) */
+html.theme-light .text-emerald-300,
+html.theme-light .text-emerald-400 {
+  color: #047857 !important; /* emerald-700 */
+}
+html.theme-light .bg-emerald-500\/10,
+html.theme-light .bg-emerald-500\/15,
+html.theme-light .bg-emerald-500\/20,
+html.theme-light .bg-emerald-500\/30 {
+  background-color: #ecfdf5 !important; /* emerald-50 */
+  border-color: #a7f3d0 !important; /* emerald-200 */
+}
+
+/* Cyan / Bleu (Flux Ingress, Zero-Trust, Détection) */
+html.theme-light .text-cyan-300,
+html.theme-light .text-cyan-400 {
+  color: #0e7490 !important; /* cyan-700 */
+}
+html.theme-light .bg-cyan-500\/10,
+html.theme-light .bg-cyan-500\/15,
+html.theme-light .bg-cyan-500\/20,
+html.theme-light .bg-cyan-500\/30 {
+  background-color: #ecfeff !important; /* cyan-50 */
+  border-color: #a5f3fc !important; /* cyan-200 */
+}
+
+/* Teal / Télémétrie & Énergie */
+html.theme-light .text-teal-300,
+html.theme-light .text-teal-400 {
+  color: #0f766e !important; /* teal-700 */
+}
+html.theme-light .bg-teal-500\/10,
+html.theme-light .bg-teal-500\/20 {
+  background-color: #f0fdfa !important; /* teal-50 */
+  border-color: #99f6e4 !important; /* teal-200 */
+}
+
+/* Ambre / Avertissement & Quarantaine */
+html.theme-light .text-amber-300,
+html.theme-light .text-amber-400 {
+  color: #b45309 !important; /* amber-700 */
+}
+html.theme-light .bg-amber-500\/10,
+html.theme-light .bg-amber-500\/15,
+html.theme-light .bg-amber-500\/20,
+html.theme-light .bg-amber-500\/30 {
+  background-color: #fffbeb !important; /* amber-50 */
+  border-color: #fde68a !important; /* amber-200 */
+}
+
+/* Rose / Rouge (Critique, Bloqué, Banni) */
+html.theme-light .text-rose-300,
+html.theme-light .text-rose-400 {
+  color: #be123c !important; /* rose-700 */
+}
+html.theme-light .bg-rose-500\/10,
+html.theme-light .bg-rose-500\/15,
+html.theme-light .bg-rose-500\/20,
+html.theme-light .bg-rose-500\/30 {
+  background-color: #fff1f2 !important; /* rose-50 */
+  border-color: #fecdd3 !important; /* rose-200 */
+}
+
+/* Violet / Pourpre (Egress DNS / IA) */
+html.theme-light .text-purple-300,
+html.theme-light .text-purple-400 {
+  color: #7e22ce !important; /* purple-700 */
+}
+html.theme-light .bg-purple-500\/10,
+html.theme-light .bg-purple-500\/20,
+html.theme-light .bg-purple-500\/30 {
+  background-color: #faf5ff !important;
+  border-color: #e9d5ff !important;
+}
+
+/* Indigo / Discord & Liens */
+html.theme-light .text-indigo-400 {
+  color: #4338ca !important;
+}
+html.theme-light .bg-indigo-500\/10,
+html.theme-light .bg-indigo-500\/25 {
+  background-color: #eef2ff !important;
+  border-color: #c7d2fe !important;
+}
+
+/* 8. Bordures Générales */
+html.theme-light .border-slate-800,
+html.theme-light .border-slate-800\/80,
+html.theme-light .border-slate-800\/90,
+html.theme-light .border-slate-800\/70,
+html.theme-light .border-slate-800\/60,
+html.theme-light .border-slate-800\/50,
+html.theme-light .border-slate-800\/40,
+html.theme-light .border-slate-700,
+html.theme-light .border-slate-700\/80,
+html.theme-light .border-slate-700\/60,
+html.theme-light .border-slate-600 {
+  border-color: #e2e8f0 !important; /* slate-200 */
+}
+
+/* 9. Champs de Saisie & Formulaires */
+html.theme-light input,
+html.theme-light select,
+html.theme-light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+html.theme-light input::placeholder,
+html.theme-light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+html.theme-light input:focus,
+html.theme-light select:focus,
+html.theme-light textarea:focus {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.15) !important;
+}
+
+/* 10. Tableaux & Listes de Données */
+html.theme-light thead,
+html.theme-light th {
+  background-color: #f8fafc !important;
+  color: #475569 !important;
+  border-color: #e2e8f0 !important;
+}
+html.theme-light td {
+  border-color: #f1f5f9 !important;
+}
+html.theme-light tr:hover td {
+  background-color: #f8fafc !important;
+}
+
+/* 11. Terminaux, Blocs de Code & Schémas ASCII (Style Terminal Développeur Pro) */
+html.theme-light pre,
+html.theme-light .bg-\[\#090d16\],
+html.theme-light .bg-slate-950\/90.font-mono {
+  background-color: #0c1322 !important; /* Dark slate terminal */
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+html.theme-light pre *,
+html.theme-light .bg-\[\#090d16\] * {
+  color: #38bdf8 !important; /* Vibrant cyan */
+}
+html.theme-light .install-cmd {
+  color: #34d399 !important; /* Vibrant emerald */
+}
+
+/* 12. Survol & Éléments Interactifs */
+html.theme-light .hover\:bg-slate-900:hover,
+html.theme-light .hover\:bg-slate-900\/80:hover,
+html.theme-light .hover\:bg-slate-850:hover,
+html.theme-light .hover\:bg-slate-800:hover,
+html.theme-light .hover\:bg-slate-800\/80:hover {
+  background-color: #f1f5f9 !important;
+}
+
+html.theme-light .hover\:text-white:hover,
+html.theme-light .hover\:text-slate-200:hover {
+  color: #0f172a !important;
+}
+
+html.theme-light .backdrop-blur-xl,
+html.theme-light .backdrop-blur-md,
+html.theme-light .backdrop-blur-sm {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}

@@ -1,0 +1,14 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import AegisUnifiedCockpit from '../../../components/soc/AegisUnifiedCockpit.vue';
+---
+
+<Layout 
+  title="Aegis Action Center • Remédiation Cybersécurité & Hardening (aegis.aivo.fr/app/actions/security)"
+  description="Centre d'actions et remédiation cybersécurité : ban IP automatique, mise en quarantaine, révocation de sessions et durcissement ANSSI."
+  isApp={true}
+>
+  <main class="flex-1 flex flex-col w-full h-full">
+    <AegisUnifiedCockpit initialView="security" client:only="vue" />
+  </main>
+</Layout>
