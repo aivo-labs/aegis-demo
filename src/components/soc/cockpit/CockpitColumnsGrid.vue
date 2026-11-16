@@ -62,12 +62,15 @@
               class="flex items-center justify-between text-xs font-mono p-2 rounded-lg bg-slate-900/60 border border-slate-800/60"
             >
               <div class="flex items-center gap-2 min-w-0">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
-                <span class="text-slate-200 text-[11px] font-semibold truncate">{{ node.service_name }}</span>
+                <span :class="['w-2 h-2 rounded-full shrink-0', node.status === 'warning' ? 'bg-red-500 animate-ping' : 'bg-emerald-400']"></span>
+                <span class="text-slate-200 text-[11px] font-semibold truncate">{{ node.service_name || node.hostname }}</span>
               </div>
               <div class="flex items-center gap-2 shrink-0">
-                <span class="text-amber-300 text-[11px] font-bold">{{ Number(node.watts).toFixed(2) }} W</span>
-                <span class="text-emerald-400 text-[10px]">{{ node.status }}</span>
+                <span v-if="node.cpu_load_pct !== undefined" :class="['text-[10px] px-1.5 py-0.5 rounded border', Number(node.cpu_load_pct) > 100 ? 'bg-red-500/20 text-red-300 border-red-500/40 font-bold' : 'bg-slate-800 text-slate-400 border-slate-700']">
+                  CPU {{ Number(node.cpu_load_pct).toFixed(1) }}%
+                </span>
+                <span class="text-amber-300 text-[11px] font-bold">{{ Number(node.watts ?? node.rapl_watts ?? 0).toFixed(2) }} W</span>
+                <span :class="['text-[10px]', node.status === 'warning' ? 'text-red-400 font-bold' : 'text-emerald-400']">{{ node.status }}</span>
               </div>
             </div>
           </div>

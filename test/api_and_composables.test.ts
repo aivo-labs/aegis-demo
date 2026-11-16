@@ -148,3 +148,33 @@ test('useLiveStreams in isDemo mode loads populated sandbox streams', async () =
   assert.ok(egressStream.value.length > 0);
   assert.ok(totalIngress24h.value > 1000);
 });
+
+test('useSandboxReplay provides PHP2Shell comparative dataset and protection mode toggle', async () => {
+  const { useSandboxReplay } = await import('../src/composables/useSandboxReplay');
+  const {
+    php2ShellDataset,
+    php2ShellReplay,
+    sandboxProtectionEnabled,
+    metrics,
+    setSandboxProtectionMode,
+  } = useSandboxReplay();
+
+  assert.equal(php2ShellDataset.withShield.http403Blocked, 602);
+  assert.equal(php2ShellDataset.withShield.raplAvgWatts, 5.81);
+  assert.equal(php2ShellDataset.withoutShield.http200Compromised, 126);
+  assert.equal(php2ShellDataset.withoutShield.raplAvgWatts, 24.14);
+  assert.equal(php2ShellReplay.value.history.length, 15);
+
+  // Test toggling Shield OFF (compromised mode)
+  setSandboxProtectionMode(false);
+  assert.equal(sandboxProtectionEnabled.value, false);
+  assert.equal(metrics.value.green.instant_power_watts, 24.14);
+  assert.equal(metrics.value.traffic.compromised_bypass_total, 126);
+
+  // Restore Shield ON
+  setSandboxProtectionMode(true);
+  assert.equal(sandboxProtectionEnabled.value, true);
+  assert.equal(metrics.value.green.instant_power_watts, 8.84);
+  assert.equal(metrics.value.traffic.compromised_bypass_total, 0);
+});
+

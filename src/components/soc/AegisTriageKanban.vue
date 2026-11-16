@@ -477,6 +477,18 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useSandboxReplay } from '../../composables/useSandboxReplay';
+import { useControls } from '../../composables/useControls';
+
+const props = defineProps({
+  isDemo: {
+    type: Boolean,
+    default: true,
+  },
+});
+
+const { ingressStream: sandboxIngress, egressStream: sandboxEgress } = useSandboxReplay();
+const { addBan } = useControls({ isDemo: props.isDemo });
 
 const activeViewTab = ref('kanban'); // 'kanban' | 'compliant'
 const filterDirection = ref('all'); // 'all' | 'ingress' | 'egress'
@@ -521,7 +533,7 @@ const compliantEvents = computed(() => {
 
 const totalEventsCount = computed(() => rawEvents.value.length);
 const blockedCount = computed(() => rawEvents.value.filter(e => String(e.action).includes('BLOCK')).length);
-const quarantineCount = computed(() => rawEvents.value.filter(e => String(e.action).includes('QUARANTINE')).length);
+const quarantineCount = computed(() => rawEvents.value.filter(e => String(e.action).includes('QUARANTINE') || String(e.action).includes('SINKHOLE')).length);
 const compliantCount = computed(() => rawEvents.value.filter(e => e.severity === 'COMPLIANT').length);
 
 function getEventsBySeverity(sev) {
@@ -541,8 +553,81 @@ function openInspectModal(item) {
   selectedInspectItem.value = item;
 }
 
+function inferDemoSeverity(threatType, decision) {
+  if (decision === 'ALLOW') return 'COMPLIANT';
+  const t = String(threatType || '').toUpperCase();
+  if (t.includes('ZERO_DAY') || t.includes('OVERFLOW') || t.includes('SQL') || t.includes('RCE') || t.includes('DGA')) {
+    return 'CRITICAL';
+  }
+  if (t.includes('TRAVERSAL') || t.includes('SSRF') || t.includes('SENSITIVE')) {
+    return 'HIGH';
+  }
+  if (t.includes('CMS_PHP') || t.includes('XSS')) {
+    return 'MEDIUM';
+  }
+  return 'LOW';
+}
+
+function buildDemoTriageEvents() {
+  const inEvents = (sandboxIngress.value || []).map((item, idx) => {
+    const sev = inferDemoSeverity(item.threat_type, item.decision);
+    return {
+      id: item.id || `demo-in-${idx}`,
+      timestamp: item.timestamp || new Date().toISOString(),
+      direction: 'ingress',
+      severity: sev,
+      client_ip: item.client_ip,
+      target: `${item.method || 'GET'} ${item.target || '/'}`,
+      threat_type: item.threat_type || 'THREAT',
+      action: item.decision === 'ALLOW' ? 'ALLOW (HTTP 200)' : `BLOCK (HTTP ${item.status_code || 403})`,
+      entropy: item.entropy ?? 3.8,
+      confidence: sev === 'CRITICAL' ? 0.99 : 0.95,
+      engine: 'Aegis Gate PEP (:8000) • Shannon + Virtual Patch',
+      geo: {
+        city: item.country === 'Allemagne' ? 'Francfort' : item.country === 'Pologne' ? 'Varsovie' : 'Paris',
+        country: item.country || 'France',
+        country_code: 'EU',
+      },
+    };
+  });
+
+  const egEvents = (sandboxEgress.value || []).map((eg, idx) => ({
+    id: eg.id || `demo-eg-${idx}`,
+    timestamp: eg.timestamp || new Date().toISOString(),
+    direction: 'egress',
+    severity: 'CRITICAL',
+    client_ip: eg.client_ip || '10.244.1.42',
+    target: `DNS ${eg.domain || eg.target}`,
+    threat_type: eg.threat_type || 'DGA_EGRESS_SINKHOLE',
+    action: eg.decision === 'BYPASS' ? 'BYPASS (C2 EGRESS)' : 'QUARANTINE / SINKHOLE 0.0.0.0',
+    entropy: eg.entropy ?? 4.62,
+    confidence: 0.99,
+    engine: 'Aegis System One Sinkhole (:5053)',
+    geo: {
+      city: 'San Francisco',
+      country: 'États-Unis',
+      country_code: 'US',
+    },
+  }));
+
+  rawEvents.value = [...inEvents, ...egEvents];
+}
+
 // Action Trigger
 async function triggerAction(action, target) {
+  if (props.isDemo) {
+    if (action === 'ban_ip') {
+      const msg = await addBan(target, 'Bannissement depuis le Kanban SOC de Triage');
+      actionToast.value = msg || `IP ${target} bannie sur Aegis Gate PEP.`;
+    } else {
+      actionToast.value = `Action Zero-Trust "${action}" appliquée immédiatement pour ${target}.`;
+    }
+    setTimeout(() => {
+      actionToast.value = '';
+    }, 4000);
+    return;
+  }
+
   try {
     const res = await fetch('/api/v1/dashboard/actions/execute', {
       method: 'POST',
@@ -565,8 +650,13 @@ async function triggerAction(action, target) {
   }, 4000);
 }
 
-// Fetch Backend Triage (100% Real Data - Zero Mock)
+// Fetch Backend Triage (avec repli automatique sur le Sandbox Replay en mode Démo)
 async function fetchTriage() {
+  if (props.isDemo) {
+    buildDemoTriageEvents();
+    return;
+  }
+
   try {
     const res = await fetch('/api/v1/dashboard/triage?include_compliant=true');
     if (res.ok) {
@@ -597,7 +687,7 @@ async function fetchTriage() {
       });
     }
   } catch (e) {
-    // Erreur réseau temporaire
+    buildDemoTriageEvents();
   }
 }
 

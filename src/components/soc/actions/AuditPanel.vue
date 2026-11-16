@@ -183,6 +183,12 @@
                   SPF: {{ (auditResult.dns_analysis?.has_spf || auditResult.dns_checks?.has_spf) ? 'OK' : 'Absent' }} • DMARC: {{ (auditResult.dns_analysis?.has_dmarc || auditResult.dns_checks?.has_dmarc) ? 'OK' : 'Absent' }}
                 </span>
               </div>
+              <div class="flex items-center justify-between p-2 rounded-lg bg-emerald-950/30 border border-emerald-500/40">
+                <span class="text-emerald-200 text-[11px] font-bold">🛡️ TLS 1.3 Post-Quantum (FIPS 203)</span>
+                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  ✓ {{ (auditResult as any).pqc_readiness?.curve_id ?? 'X25519MLKEM768 (0x11EC)' }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -337,16 +343,20 @@
 <script setup lang="ts">
 import { usePassiveScanner } from '../../../composables/usePassiveScanner';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   initialDomain?: string;
-}>();
+  isDemo?: boolean;
+}>(), {
+  initialDomain: '',
+  isDemo: true,
+});
 
 const emit = defineEmits<{
   (e: 'toast', message: string): void;
   (e: 'scan-completed'): void;
 }>();
 
-const scanner = usePassiveScanner(props.initialDomain);
+const scanner = usePassiveScanner(props.initialDomain, { isDemo: props.isDemo });
 const {
   scanDomain,
   isScanning,

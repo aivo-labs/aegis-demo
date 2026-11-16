@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue';
 import { streamsApi, type IngressEvent, type EgressEvent } from '../services/api/streamsApi';
 import { REPLAY_ATTACK_SEEDS } from '../data/sandboxFixtures';
+import { useSandboxReplay } from './useSandboxReplay';
 
 export function useLiveStreams(options?: { isDemo?: boolean }) {
   const ingressStream = ref<IngressEvent[]>([]);
@@ -28,6 +29,16 @@ export function useLiveStreams(options?: { isDemo?: boolean }) {
     const cat = (item.category || (item as any).threat_category || '').toUpperCase();
     const uri = (item.target || (item as any).request_uri || '').toLowerCase();
     const threat = (item.threat_type || (item as any).threat_detected || '').toUpperCase();
+    if (
+      threat.includes('ZERO_DAY') ||
+      threat.includes('OVERFLOW') ||
+      threat.includes('SQL') ||
+      threat.includes('RCE') ||
+      cat.includes('PHP2SHELL') ||
+      cat.includes('EXPLOIT')
+    ) {
+      return false;
+    }
     return (
       cat.includes('SONDE') ||
       cat.includes('SCAN') ||
@@ -39,7 +50,6 @@ export function useLiveStreams(options?: { isDemo?: boolean }) {
       uri.includes('xmlrpc') ||
       uri.includes('phpmyadmin') ||
       uri.includes('phpinfo') ||
-      uri.includes('cgi-bin') ||
       uri.includes('setup.cgi')
     );
   }
@@ -133,7 +143,8 @@ export function useLiveStreams(options?: { isDemo?: boolean }) {
   });
 
   function loadSandboxStreams() {
-    ingressStream.value = REPLAY_ATTACK_SEEDS.map((s, idx) => ({
+    const replay = useSandboxReplay();
+    const seedIngress: IngressEvent[] = REPLAY_ATTACK_SEEDS.map((s, idx) => ({
       id: `seed-ingress-${idx}`,
       client_ip: s.client_ip,
       method: s.method,
@@ -153,12 +164,14 @@ export function useLiveStreams(options?: { isDemo?: boolean }) {
       latency_ms: s.latency_ms,
     }));
 
-    egressStream.value = REPLAY_ATTACK_SEEDS
-      .filter(s => s.decision === 'SINKHOLE' || s.category.includes('Egress'))
+    const seedEgress: EgressEvent[] = REPLAY_ATTACK_SEEDS
+      .filter(s => s.decision === 'SINKHOLE' || s.category.includes('Egress') || s.category.includes('PHP2Shell'))
       .map((s, idx) => ({
         id: `seed-egress-${idx}`,
         protocol: 'DNS',
-        domain: s.target.replace('/dns-query?name=', '').replace('&type=A', ''),
+        domain: s.decision === 'SINKHOLE'
+          ? s.target.replace('/dns-query?name=', '').replace('&type=A', '')
+          : 'c2-php2shell-reverse.a8f93bc01d9f4e2a.xyz',
         target: s.target,
         target_ip: '0.0.0.0',
         client_ip: s.client_ip,
@@ -171,10 +184,13 @@ export function useLiveStreams(options?: { isDemo?: boolean }) {
         exfil_probability: 0.98,
       }));
 
-    totalIngress24h.value = 13950;
-    blockedIngress24h.value = 13845;
-    totalEgress24h.value = 870;
-    blockedEgress24h.value = 867;
+    ingressStream.value = mergeStreams(ingressStream.value, [...replay.ingressStream.value, ...seedIngress]);
+    egressStream.value = mergeStreams(egressStream.value, [...replay.egressStream.value, ...seedEgress]);
+
+    totalIngress24h.value = Math.max(13950, replay.metrics.value.traffic.ingress_total);
+    blockedIngress24h.value = Math.max(13845, replay.metrics.value.traffic.ingress_blocked);
+    totalEgress24h.value = Math.max(870, replay.metrics.value.traffic.egress_total);
+    blockedEgress24h.value = Math.max(867, replay.metrics.value.traffic.egress_blocked);
   }
 
   function mergeStreams<T extends { id: string; timestamp: string }>(currentList: T[], incomingList: T[]): T[] {
@@ -476,6 +492,13 @@ export function useLiveStreams(options?: { isDemo?: boolean }) {
       blockedIngress24h.value += freshIngress.length;
       totalEgress24h.value += freshEgress.length;
       blockedEgress24h.value += freshEgress.length;
+
+      if (options?.isDemo) {
+        const replay = useSandboxReplay();
+        replay.ingressStream.value = mergeStreams(replay.ingressStream.value, freshIngress).slice(0, 40);
+        replay.egressStream.value = mergeStreams(replay.egressStream.value, freshEgress).slice(0, 40);
+        return;
+      }
 
       // 2. Fire backend simulation to record in PostgreSQL / Gate Proxy
       await streamsApi.simulateBotProbes();

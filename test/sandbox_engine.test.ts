@@ -144,8 +144,23 @@ test('inspectSandboxRequest mitigates attacks and permits legitimate traffic', (
   assert.equal(overflowRes.threatType, 'OVERFLOW_PAYLOAD_413');
 });
 
-test('SANDBOX_PRESETS are properly structured and evaluatable', () => {
-  assert.ok(SANDBOX_PRESETS.length >= 7, 'Should have at least 7 presets');
+test('SANDBOX_PRESETS are properly structured and evaluatable (including PHP2Shell presets)', () => {
+  assert.ok(SANDBOX_PRESETS.length >= 10, 'Should have at least 10 presets including PHP2Shell');
+
+  const php2shellRce = SANDBOX_PRESETS.find((p) => p.id === 'php2shell-cve-2024-4577');
+  assert.ok(php2shellRce, 'php2shell-cve-2024-4577 preset must exist');
+  const rceEval = inspectSandboxRequest(php2shellRce.request);
+  assert.equal(rceEval.verdict, 'BLOCK');
+  assert.equal(rceEval.httpStatus, 403);
+  assert.equal(rceEval.threatType, 'ZERO_DAY_VIRTUAL_PATCH');
+
+  const php2shellOverflow = SANDBOX_PRESETS.find((p) => p.id === 'php2shell-overflow-413');
+  assert.ok(php2shellOverflow, 'php2shell-overflow-413 preset must exist');
+  const overflowEval = inspectSandboxRequest(php2shellOverflow.request);
+  assert.equal(overflowEval.verdict, 'BLOCK');
+  assert.equal(overflowEval.httpStatus, 413);
+  assert.equal(overflowEval.threatType, 'OVERFLOW_PAYLOAD_413');
+
   for (const preset of SANDBOX_PRESETS) {
     assert.ok(preset.id);
     assert.ok(preset.name);
@@ -166,3 +181,4 @@ test('SANDBOX_PRESETS are properly structured and evaluatable', () => {
     }
   }
 });
+

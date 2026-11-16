@@ -31,12 +31,14 @@ export interface SandboxSummaryMetrics {
     monitored_nodes: Array<{
       id: string;
       hostname: string;
+      service_name?: string;
       ip: string;
       status: 'active' | 'warning' | 'offline';
       os: string;
       cpu_load_pct: number;
       ram_mb: number;
       rapl_watts: number;
+      watts?: number;
       pep_enabled: boolean;
     }>;
   };
@@ -79,23 +81,27 @@ export const SANDBOX_INITIAL_METRICS: SandboxSummaryMetrics = {
       {
         id: 'node-vps-paris-01',
         hostname: 'vps-gra-edge01.aegis.sovereign',
+        service_name: 'vps-gra-edge01.aegis.sovereign',
         ip: '51.83.xxx.xxx',
         status: 'active',
         os: 'Ubuntu 24.04 LTS (Kernel 6.8 RAPL)',
         cpu_load_pct: 3.2,
         ram_mb: 24,
         rapl_watts: 8.78,
+        watts: 8.78,
         pep_enabled: true,
       },
       {
         id: 'node-k8s-ingress-02',
         hostname: 'k8s-worker-ns.cluster.local',
+        service_name: 'k8s-worker-ns.cluster.local',
         ip: '10.244.1.42',
         status: 'active',
         os: 'Debian 12 Bookworm (Kepler eBPF)',
         cpu_load_pct: 4.8,
         ram_mb: 18,
         rapl_watts: 9.15,
+        watts: 9.15,
         pep_enabled: true,
       },
     ],
@@ -148,6 +154,40 @@ export interface ReplaySeedEvent {
 }
 
 export const REPLAY_ATTACK_SEEDS: ReplaySeedEvent[] = [
+  {
+    client_ip: '185.220.101.33',
+    method: 'POST',
+    target: '/index.php?%ADd+allow_url_include%3d1+%ADd+auto_prepend_file%3dphp://input',
+    host: 'aegis.aivo.fr',
+    user_agent: 'PHP2Shell-Exploit/2.1 (CVE-2024-4577; RCE-CGI)',
+    threat_type: 'ZERO_DAY_VIRTUAL_PATCH',
+    category: 'PHP2Shell RCE (CVE-2024-4577)',
+    decision: 'BLOCK',
+    status_code: 403,
+    lat: 50.1109,
+    lon: 8.6821,
+    city: 'Francfort',
+    country: 'Allemagne',
+    entropy: 4.82,
+    latency_ms: 0.14,
+  },
+  {
+    client_ip: '91.214.124.88',
+    method: 'POST',
+    target: '/cgi-bin/php-cgi?%ADd+cgi.force_redirect%3d0+%ADd+auto_prepend_file%3dphp://input',
+    host: 'aegis.aivo.fr',
+    user_agent: 'PHP2Shell-BufferOverflow/1.4 (CVE-2026-109618)',
+    threat_type: 'OVERFLOW_PAYLOAD_413',
+    category: 'PHP2Shell Buffer Overflow (CVE-2026-109618)',
+    decision: 'BLOCK',
+    status_code: 413,
+    lat: 52.2297,
+    lon: 21.0122,
+    city: 'Varsovie',
+    country: 'Pologne',
+    entropy: 5.14,
+    latency_ms: 0.11,
+  },
   {
     client_ip: '185.220.101.4',
     method: 'GET',
@@ -600,3 +640,116 @@ export const SANDBOX_CVE_FEED: SandboxCvePayload = {
     },
   ],
 };
+
+export interface Php2ShellBenchmarkSeriesPoint {
+  second: number;
+  withShieldWatts: number;
+  withoutShieldWatts: number;
+  withShieldCpuPct: number;
+  withoutShieldCpuPct: number;
+  withShieldBlocked: number;
+  withoutShieldCompromised: number;
+}
+
+export interface Php2ShellBenchmarkDataset {
+  id: string;
+  title: string;
+  cveIds: string[];
+  hardwareSpec: string;
+  durationSeconds: number;
+  concurrencyWorkers: number;
+  withShield: {
+    label: string;
+    totalRequests: number;
+    http403Blocked: number;
+    http200Compromised: number;
+    targetCpuAvgPct: number;
+    targetCpuPeakPct: number;
+    gateCpuAvgPct: number;
+    raplAvgWatts: number;
+    raplPeakWatts: number;
+    totalEnergyJoules: number;
+    avgLatencyMs: number;
+    verdict: string;
+  };
+  withoutShield: {
+    label: string;
+    totalRequests: number;
+    http403Blocked: number;
+    http200Compromised: number;
+    targetCpuAvgPct: number;
+    targetCpuPeakPct: number;
+    raplAvgWatts: number;
+    raplPeakWatts: number;
+    totalEnergyJoules: number;
+    avgLatencyMs: number;
+    verdict: string;
+  };
+  savings: {
+    powerReductionPct: number;
+    energySavedJoules: number;
+    latencySpeedupFactor: number;
+    cpuTargetSavedPct: number;
+  };
+  timeline: Php2ShellBenchmarkSeriesPoint[];
+}
+
+export const PHP2SHELL_BENCHMARK_DATASET: Php2ShellBenchmarkDataset = {
+  id: 'php2shell-benchmark-rapl-15s',
+  title: 'Replay Comparatif PHP2Shell (CVE-2024-4577 / CVE-2026-109618)',
+  cveIds: ['CVE-2024-4577', 'CVE-2026-109618'],
+  hardwareSpec: 'Linux 6.8 • Sondes Silicium Intel RAPL (/sys/class/powercap/intel-rapl:0/energy_uj) • PHP-FPM 8.3',
+  durationSeconds: 15,
+  concurrencyWorkers: 30,
+  withShield: {
+    label: 'Avec Bouclier Aegis (Zero-Trust PEP Actif)',
+    totalRequests: 602,
+    http403Blocked: 602,
+    http200Compromised: 0,
+    targetCpuAvgPct: 0.0,
+    targetCpuPeakPct: 0.0,
+    gateCpuAvgPct: 1.54,
+    raplAvgWatts: 5.81,
+    raplPeakWatts: 16.01,
+    totalEnergyJoules: 101.04,
+    avgLatencyMs: 17.33,
+    verdict: '100% Intercepté à l’Edge (HTTP 403 / 413) • 0% CPU Cible',
+  },
+  withoutShield: {
+    label: 'Sans Bouclier (PHP-FPM 8.3 Exposé)',
+    totalRequests: 126,
+    http403Blocked: 0,
+    http200Compromised: 126,
+    targetCpuAvgPct: 537.98,
+    targetCpuPeakPct: 743.4,
+    raplAvgWatts: 24.14,
+    raplPeakWatts: 37.58,
+    totalEnergyJoules: 438.91,
+    avgLatencyMs: 2619.57,
+    verdict: '100% Compromis (RCE + Fork Bomb / Cryptojacking) • Saturation 7.4 cœurs',
+  },
+  savings: {
+    powerReductionPct: 75.9,
+    energySavedJoules: 337.87,
+    latencySpeedupFactor: 151.2,
+    cpuTargetSavedPct: 100.0,
+  },
+  timeline: [
+    { second: 1, withShieldWatts: 5.42, withoutShieldWatts: 14.80, withShieldCpuPct: 0, withoutShieldCpuPct: 210.4, withShieldBlocked: 40, withoutShieldCompromised: 9 },
+    { second: 2, withShieldWatts: 5.65, withoutShieldWatts: 19.45, withShieldCpuPct: 0, withoutShieldCpuPct: 412.8, withShieldBlocked: 81, withoutShieldCompromised: 18 },
+    { second: 3, withShieldWatts: 5.78, withoutShieldWatts: 22.90, withShieldCpuPct: 0, withoutShieldCpuPct: 528.0, withShieldBlocked: 121, withoutShieldCompromised: 27 },
+    { second: 4, withShieldWatts: 6.12, withoutShieldWatts: 25.60, withShieldCpuPct: 0, withoutShieldCpuPct: 604.2, withShieldBlocked: 162, withoutShieldCompromised: 36 },
+    { second: 5, withShieldWatts: 5.89, withoutShieldWatts: 28.14, withShieldCpuPct: 0, withoutShieldCpuPct: 658.5, withShieldBlocked: 202, withoutShieldCompromised: 45 },
+    { second: 6, withShieldWatts: 5.74, withoutShieldWatts: 31.20, withShieldCpuPct: 0, withoutShieldCpuPct: 695.1, withShieldBlocked: 242, withoutShieldCompromised: 53 },
+    { second: 7, withShieldWatts: 5.95, withoutShieldWatts: 34.85, withShieldCpuPct: 0, withoutShieldCpuPct: 722.6, withShieldBlocked: 283, withoutShieldCompromised: 62 },
+    { second: 8, withShieldWatts: 16.01, withoutShieldWatts: 37.58, withShieldCpuPct: 0, withoutShieldCpuPct: 743.4, withShieldBlocked: 324, withoutShieldCompromised: 70 },
+    { second: 9, withShieldWatts: 5.84, withoutShieldWatts: 29.40, withShieldCpuPct: 0, withoutShieldCpuPct: 684.0, withShieldBlocked: 364, withoutShieldCompromised: 78 },
+    { second: 10, withShieldWatts: 5.62, withoutShieldWatts: 26.15, withShieldCpuPct: 0, withoutShieldCpuPct: 618.3, withShieldBlocked: 404, withoutShieldCompromised: 86 },
+    { second: 11, withShieldWatts: 5.58, withoutShieldWatts: 23.80, withShieldCpuPct: 0, withoutShieldCpuPct: 562.7, withShieldBlocked: 444, withoutShieldCompromised: 94 },
+    { second: 12, withShieldWatts: 5.51, withoutShieldWatts: 21.40, withShieldCpuPct: 0, withoutShieldCpuPct: 498.4, withShieldBlocked: 484, withoutShieldCompromised: 102 },
+    { second: 13, withShieldWatts: 5.48, withoutShieldWatts: 18.90, withShieldCpuPct: 0, withoutShieldCpuPct: 425.0, withShieldBlocked: 523, withoutShieldCompromised: 110 },
+    { second: 14, withShieldWatts: 5.44, withoutShieldWatts: 15.20, withShieldCpuPct: 0, withoutShieldCpuPct: 382.1, withShieldBlocked: 563, withoutShieldCompromised: 118 },
+    { second: 15, withShieldWatts: 5.12, withoutShieldWatts: 12.73, withShieldCpuPct: 0, withoutShieldCpuPct: 324.2, withShieldBlocked: 602, withoutShieldCompromised: 126 },
+  ],
+};
+

@@ -22,9 +22,16 @@
           <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
           <span class="font-extrabold tracking-wide">MODE DÉMONSTRATEUR INTERACTIF</span>
           <span class="hidden sm:inline text-slate-500">•</span>
-          <span class="hidden sm:inline text-slate-300 text-[11px]">Moteur Zero-Trust exécuté en local (&lt; 0.25 ms) • Télémétrie 24h anonymisée</span>
+          <span class="hidden sm:inline text-slate-300 text-[11px]">Moteur Zero-Trust exécuté en local (&lt; 0.25 ms) • Télémétrie RAPL &amp; Replay PHP2Shell</span>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            @click="triggerPhp2ShellReplayFromBanner"
+            class="px-3 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-400/50 text-red-200 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm active:scale-95"
+          >
+            <span>🔥</span>
+            <span>{{ php2ShellReplay.isRunning ? `Replay PHP2Shell (${php2ShellReplay.currentSecond}s/15s)...` : 'Replay Attaque PHP2Shell' }}</span>
+          </button>
           <button
             @click="switchNav('fuzzer')"
             class="px-3 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-200 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm active:scale-95"
@@ -58,7 +65,7 @@
           
           <!-- VUE A : KANBAN SOC DE TRIAGE DÉDIÉ (SI activeNav === 'triage') -->
           <div v-if="activeNav === 'triage'" class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto">
-            <AegisTriageKanban />
+            <AegisTriageKanban :isDemo="isDemoMode" />
           </div>
 
           <!-- VUE B : ACTION CENTER DÉDIÉ (DIAGNOSTIC, FLUX, TÉLÉMÉTRIE, CVE, CONTRÔLES, ROADMAP, FUZZER) -->
@@ -84,6 +91,155 @@
             @toggle-theme="toggleCockpitTheme"
             @logout="logout"
           />
+
+          <!-- BANNIÈRE / MODULE DE REPLAY COMPARATIF PHP2SHELL (CVE-2024-4577 / CVE-2026-109618) -->
+          <div v-if="isDemoMode" class="mb-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 p-4 sm:p-5 shadow-xl backdrop-blur-xl">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3.5 border-b border-slate-800/80">
+              <div class="flex items-start sm:items-center gap-3">
+                <span class="px-2.5 py-1 rounded-lg bg-red-500/15 border border-red-500/40 text-red-300 font-mono font-extrabold text-xs shrink-0">
+                  🔥 BENCHMARK PHP2SHELL
+                </span>
+                <div>
+                  <h2 class="text-sm sm:text-base font-extrabold text-white flex flex-wrap items-center gap-2">
+                    <span>Replay Matériel : Attaque PHP2Shell (`CVE-2024-4577` &amp; `CVE-2026-109618`)</span>
+                    <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                      -{{ php2ShellDataset.savings.powerReductionPct }}% Watts RAPL • -{{ php2ShellDataset.savings.energySavedJoules }} Joules
+                    </span>
+                  </h2>
+                  <p class="text-[11px] font-mono text-slate-400 mt-0.5">
+                    {{ php2ShellDataset.hardwareSpec }} • 30 workers concurrents pendant 15s
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <button
+                  @click="startPhp2ShellBenchmarkReplay()"
+                  class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-mono font-extrabold text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all active:scale-95"
+                >
+                  <span>{{ php2ShellReplay.isRunning ? '🔄 Replay en cours...' : '▶️ Lancer le Replay Comparatif (15s)' }}</span>
+                </button>
+                <button
+                  @click="toggleProtectionMode"
+                  :class="[
+                    'px-3 py-1.5 rounded-xl font-mono font-bold text-xs border cursor-pointer transition-all',
+                    protectionEnabled
+                      ? 'bg-red-500/15 hover:bg-red-500/25 text-red-300 border-red-500/40'
+                      : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border-emerald-500/40'
+                  ]"
+                >
+                  {{ protectionEnabled ? '⚠️ Simuler SANS Bouclier (24.14 W)' : '🛡️ Réactiver Bouclier Aegis (5.81 W)' }}
+                </button>
+                <button
+                  @click="switchNav('fuzzer')"
+                  class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 font-mono font-bold text-xs cursor-pointer transition-colors"
+                >
+                  🔬 Fuzzer PHP2Shell ➔
+                </button>
+              </div>
+            </div>
+
+            <!-- Barre de progression du Replay Live -->
+            <div v-if="php2ShellReplay.isRunning" class="mt-3">
+              <div class="flex items-center justify-between text-[11px] font-mono text-cyan-300 mb-1">
+                <span>⚡ Salve d'exploitation PHP2Shell (`%ADd allow_url_include=1` + `auto_prepend_file=php://input`) en cours...</span>
+                <span class="font-bold">{{ php2ShellReplay.currentSecond }}s / {{ php2ShellReplay.totalSeconds }}s ({{ php2ShellReplay.progressPct }}%)</span>
+              </div>
+              <div class="w-full h-2 rounded-full bg-slate-950 overflow-hidden border border-slate-800">
+                <div
+                  class="h-full bg-gradient-to-r from-cyan-400 via-emerald-400 to-amber-400 transition-all duration-300"
+                  :style="{ width: `${php2ShellReplay.progressPct}%` }"
+                ></div>
+              </div>
+            </div>
+
+            <!-- Comparatif Côte à Côte : AVEC vs SANS Bouclier -->
+            <div class="mt-3.5 grid grid-cols-1 lg:grid-cols-2 gap-3.5 font-mono">
+              <!-- Colonne 1 : AVEC BOUCLIER AEGIS -->
+              <div
+                :class="[
+                  'p-3.5 rounded-xl border transition-all',
+                  protectionEnabled
+                    ? 'bg-emerald-950/25 border-emerald-500/50 ring-1 ring-emerald-500/20'
+                    : 'bg-slate-950/60 border-slate-800/80 opacity-85'
+                ]"
+              >
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-extrabold text-emerald-400 flex items-center gap-1.5">
+                    <span>🛡️</span>
+                    <span>AVEC BOUCLIER AEGIS (Zero-Trust Edge PEP)</span>
+                  </span>
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
+                    100% BLOQUÉ (HTTP 403)
+                  </span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                  <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
+                    <div class="text-[10px] text-slate-400">Puissance RAPL</div>
+                    <div class="text-sm font-black text-emerald-400">{{ php2ShellReplay.withShieldLive.watts.toFixed(2) }} W</div>
+                    <div class="text-[9px] text-slate-500">Pic 16.01 W</div>
+                  </div>
+                  <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
+                    <div class="text-[10px] text-slate-400">CPU Cible PHP</div>
+                    <div class="text-sm font-black text-emerald-400">{{ php2ShellReplay.withShieldLive.cpuPct.toFixed(1) }} %</div>
+                    <div class="text-[9px] text-slate-500">Gate: 1.54%</div>
+                  </div>
+                  <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
+                    <div class="text-[10px] text-slate-400">Énergie (15s)</div>
+                    <div class="text-sm font-black text-cyan-300">{{ php2ShellReplay.withShieldLive.joules.toFixed(2) }} J</div>
+                    <div class="text-[9px] text-slate-500">Latence 17.33 ms</div>
+                  </div>
+                  <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
+                    <div class="text-[10px] text-slate-400">Attaques Stoppées</div>
+                    <div class="text-sm font-black text-white">{{ php2ShellReplay.withShieldLive.blocked403 }} / 602</div>
+                    <div class="text-[9px] text-emerald-400">0 compromission</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Colonne 2 : SANS BOUCLIER (PHP-FPM EXPOSÉ) -->
+              <div
+                :class="[
+                  'p-3.5 rounded-xl border transition-all',
+                  !protectionEnabled
+                    ? 'bg-red-950/30 border-red-500/60 ring-1 ring-red-500/30'
+                    : 'bg-slate-950/60 border-red-900/40'
+                ]"
+              >
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs font-extrabold text-red-400 flex items-center gap-1.5">
+                    <span>🔥</span>
+                    <span>SANS BOUCLIER (PHP-FPM 8.3 Exposé Directement)</span>
+                  </span>
+                  <span class="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-300 font-bold border border-red-500/30">
+                    COMPROMIS (HTTP 200 RCE)
+                  </span>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+                  <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
+                    <div class="text-[10px] text-slate-400">Puissance RAPL</div>
+                    <div class="text-sm font-black text-red-400">{{ php2ShellReplay.withoutShieldLive.watts.toFixed(2) }} W</div>
+                    <div class="text-[9px] text-red-300/70">Pic 37.58 W (x4.1)</div>
+                  </div>
+                  <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
+                    <div class="text-[10px] text-slate-400">CPU Cible PHP</div>
+                    <div class="text-sm font-black text-red-400">{{ php2ShellReplay.withoutShieldLive.cpuPct.toFixed(1) }} %</div>
+                    <div class="text-[9px] text-red-300/70">Moy. 537.98%</div>
+                  </div>
+                  <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
+                    <div class="text-[10px] text-slate-400">Énergie (15s)</div>
+                    <div class="text-sm font-black text-amber-400">{{ php2ShellReplay.withoutShieldLive.joules.toFixed(2) }} J</div>
+                    <div class="text-[9px] text-red-300/70">Latence 2619 ms</div>
+                  </div>
+                  <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
+                    <div class="text-[10px] text-slate-400">Shells Exécutés</div>
+                    <div class="text-sm font-black text-red-300">{{ php2ShellReplay.withoutShieldLive.compromised200 }} / 126</div>
+                    <div class="text-[9px] text-red-400">Fork Bomb &amp; C2</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <!-- TOP 4 EXECUTIVE KPI CARDS -->
           <CockpitKpiCards
@@ -184,11 +340,16 @@ const props = withDefaults(defineProps<{
 // Replayer Sandbox Interactif (Mode Démo)
 const {
   isPlaying,
+  sandboxProtectionEnabled,
   toggleReplay,
   metrics: sandboxMetrics,
   animatedWatts: sandboxWatts,
   dynamicPowerPath: sandboxPowerPath,
   threats: sandboxThreats,
+  php2ShellReplay,
+  php2ShellDataset,
+  setSandboxProtectionMode,
+  startPhp2ShellBenchmarkReplay,
 } = useSandboxReplay();
 
 // Authentication state (Pure BFF)
@@ -216,7 +377,7 @@ const initialScanDomain = ref('');
 const showLogDrawer = ref(true);
 const isExporting = ref(false);
 const isTogglingProtection = ref(false);
-const protectionEnabled = ref(true);
+const protectionEnabled = ref(sandboxProtectionEnabled.value);
 const showExportModal = ref(false);
 const showEnrollModal = ref(false);
 const showAccountModal = ref(false);
@@ -374,10 +535,22 @@ async function fetchSummary() {
   }
 }
 
+function triggerPhp2ShellReplayFromBanner() {
+  if (activeNav.value !== 'dashboard') {
+    switchNav('dashboard');
+  }
+  startPhp2ShellBenchmarkReplay();
+}
+
 async function toggleProtectionMode() {
   isTogglingProtection.value = true;
   try {
     const nextState = !protectionEnabled.value;
+    if (isDemoMode.value) {
+      protectionEnabled.value = nextState;
+      setSandboxProtectionMode(nextState);
+      return;
+    }
     const res = await fetch('/api/v1/dashboard/protection', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -411,10 +584,11 @@ async function exportVSReport() {
   try {
     const reportData = {
       horodatage_utc: new Date().toISOString(),
-      moteur: 'Aegis Go Control Plane v5.3',
-      traffic: metrics.value.traffic,
-      green_rapl: metrics.value.green,
-      retention_policy: metrics.value.retention,
+      moteur: 'Aegis Go Control Plane v1.1.0 (PQC + MCP Ready)',
+      traffic: activeMetrics.value.traffic,
+      green_rapl: activeMetrics.value.green,
+      retention_policy: activeMetrics.value.retention,
+      php2shell_benchmark_comparative: php2ShellDataset,
     };
     const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
     downloadUrl.value = URL.createObjectURL(blob);

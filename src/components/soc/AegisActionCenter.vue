@@ -27,6 +27,7 @@
       <AuditPanel 
         v-if="activeTab === 'audit'"
         :initialDomain="initialDomain"
+        :isDemo="props.isDemo"
         @toast="showToast"
         @scan-completed="fetchCveFeed"
       />
@@ -108,6 +109,7 @@ import { useAegisTheme } from '../../composables/useAegisTheme';
 import { useLiveStreams } from '../../composables/useLiveStreams';
 import { useCveFeed } from '../../composables/useCveFeed';
 import { useControls } from '../../composables/useControls';
+import { useSandboxReplay } from '../../composables/useSandboxReplay';
 
 const props = withDefaults(defineProps<{
   initialTab?: string;
@@ -123,6 +125,8 @@ const emit = defineEmits<{
   (e: 'logout'): void;
 }>();
 
+const { injectCustomInspectionEvent } = useSandboxReplay();
+
 const actionToast = ref('');
 function showToast(msg: string) {
   actionToast.value = msg;
@@ -131,8 +135,10 @@ function showToast(msg: string) {
   }, 4500);
 }
 
-function handleFuzzerEvaluated(result: SandboxInspectionResult, _req: SandboxRequest) {
-  showToast(`Verdict PEP : ${result.verdict === 'ALLOW' ? '✅ HTTP 200 AUTORISÉ' : result.verdict === 'SINKHOLE' ? '🌐 DNS SINKHOLE' : `❌ HTTP ${result.httpStatus} BLOQUÉ`} (${result.threatType} en ${result.latencyMs} ms)`);
+function handleFuzzerEvaluated(result: SandboxInspectionResult, req: SandboxRequest) {
+  injectCustomInspectionEvent(result, req);
+  fetchLiveStreams();
+  showToast(`Verdict PEP : ${result.verdict === 'ALLOW' ? '✅ HTTP 200 AUTORISÉ' : result.verdict === 'SINKHOLE' ? '🌐 DNS SINKHOLE' : `❌ HTTP ${result.httpStatus} BLOQUÉ`} (${result.threatType} en ${result.latencyMs} ms) • Injecté dans les flux SOC`);
 }
 
 // Composables
@@ -152,7 +158,7 @@ const {
 const { 
   bannedIps, maxPayloadBytes, retention, fetchControls, 
   addBan, removeBan, updatePayloadLimit, saveRetention, purgeCleanLogs 
-} = useControls();
+} = useControls({ isDemo: props.isDemo });
 
 // Navigation Tabs
 const activeTab = ref(

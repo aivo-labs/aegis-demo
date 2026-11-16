@@ -32,11 +32,11 @@
         </button>
 
         <button
-          @click="runEvaluation"
+          @click="runEvaluation(true)"
           class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-cyan-500/20 active:scale-95"
         >
           <span>⚡</span>
-          <span>Évaluer ({{ lastLatencyMs }} ms)</span>
+          <span>Évaluer &amp; Injecter ({{ lastLatencyMs }} ms)</span>
         </button>
       </div>
     </div>
@@ -56,9 +56,9 @@
     <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 space-y-2.5">
       <div class="flex items-center justify-between text-xs">
         <span class="font-mono text-slate-400 font-bold uppercase tracking-wider text-[11px]">
-          🎯 Scénarios Pré-Configurés (Cliquez pour charger &amp; tester) :
+          🎯 Scénarios Pré-Configurés (Cliquez pour charger &amp; injecter dans le SOC) :
         </span>
-        <span class="text-[11px] font-mono text-slate-500">8 scénarios prêts à l'emploi</span>
+        <span class="text-[11px] font-mono text-cyan-400 font-bold">{{ SANDBOX_PRESETS.length }} scénarios prêts à l'emploi (dont PHP2Shell)</span>
       </div>
 
       <div class="flex flex-wrap gap-2">
@@ -70,6 +70,8 @@
             'px-3 py-1.5 rounded-xl font-mono text-xs font-semibold flex items-center gap-2 border transition-all cursor-pointer',
             selectedPresetId === preset.id
               ? 'bg-cyan-500/20 border-cyan-400 text-cyan-200 shadow-md shadow-cyan-500/10'
+              : preset.id.startsWith('php2shell')
+              ? 'bg-red-950/40 hover:bg-red-900/50 border-red-500/40 text-red-200 hover:text-white'
               : 'bg-slate-950 hover:bg-slate-800/90 border-slate-800 text-slate-300 hover:text-white'
           ]"
           :title="preset.description"
@@ -274,6 +276,20 @@
           <p class="mt-3.5 text-xs text-slate-300 leading-relaxed font-sans bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
             <strong class="text-slate-200">Justification mathématique :</strong> {{ result.patternDescription }}
           </p>
+
+          <!-- IMPACT ÉNERGÉTIQUE & SILICIUM (BENCHMARK RAPL) POUR LES PAYLOADS OFFENSIFS -->
+          <div
+            v-if="result.verdict !== 'ALLOW'"
+            class="mt-3 p-3 rounded-xl bg-slate-950/90 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono"
+          >
+            <div class="flex items-center gap-2 text-emerald-300">
+              <span>🌿</span>
+              <span><strong>Économie Silicium (Intel RAPL) :</strong> Rejeté en {{ result.latencyMs }} ms à l'Edge (<strong>5.81 W</strong> • 0% CPU Cible)</span>
+            </div>
+            <div class="text-rose-300/90">
+              Sans Aegis : <strong>24.14 W</strong> (pic 37.58 W) • <strong>743.4% CPU</strong>
+            </div>
+          </div>
         </div>
 
         <!-- CARTE D'ANALYSE SPECTRALE D'ENTROPIE DE SHANNON H(X) -->
@@ -417,15 +433,14 @@ const emit = defineEmits<{
   (e: 'payload-evaluated', result: SandboxInspectionResult, req: SandboxRequest): void;
 }>();
 
-// État de la requête
+const php2ShellDefault = SANDBOX_PRESETS.find((p) => p.id === 'php2shell-cve-2024-4577') || SANDBOX_PRESETS[0];
+
+// État de la requête (pré-chargé sur PHP2Shell CVE-2024-4577 pour démonstration immédiate)
 const request = reactive<SandboxRequest>({
-  method: 'GET',
-  url: '/api/v1/users?page=2&limit=50&sort=name_asc',
-  headers: {
-    'Accept': 'application/json',
-    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36',
-  },
-  body: '',
+  method: php2ShellDefault.request.method,
+  url: php2ShellDefault.request.url,
+  headers: { ...php2ShellDefault.request.headers },
+  body: php2ShellDefault.request.body,
 });
 
 interface HeaderRow {
@@ -433,13 +448,12 @@ interface HeaderRow {
   value: string;
 }
 
-const headerList = ref<HeaderRow[]>([
-  { key: 'Accept', value: 'application/json' },
-  { key: 'User-Agent', value: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36' },
-]);
+const headerList = ref<HeaderRow[]>(
+  Object.entries(php2ShellDefault.request.headers).map(([key, value]) => ({ key, value }))
+);
 
 const maxPayloadKb = ref(64);
-const selectedPresetId = ref<string>('clean-api');
+const selectedPresetId = ref<string>(php2ShellDefault.id);
 const result = ref<SandboxInspectionResult | null>(null);
 const lastLatencyMs = ref<number>(0.15);
 const copiedLink = ref(false);
@@ -470,7 +484,7 @@ function removeHeader(index: number) {
   onHeadersChange();
 }
 
-function loadPreset(preset: SandboxPreset) {
+function loadPreset(preset: SandboxPreset, emitEvent = true) {
   selectedPresetId.value = preset.id;
   request.method = preset.request.method;
   request.url = preset.request.url;
@@ -479,23 +493,25 @@ function loadPreset(preset: SandboxPreset) {
   headerList.value = Object.entries(preset.request.headers).map(([key, value]) => ({ key, value }));
   syncHeadersFromList();
 
-  runEvaluation();
+  runEvaluation(emitEvent);
 }
 
 function triggerAutoEval() {
   if (debounceTimer) clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => {
-    runEvaluation();
+    runEvaluation(false);
   }, 120);
 }
 
-function runEvaluation() {
+function runEvaluation(shouldEmit = true) {
   syncHeadersFromList();
   const res = inspectSandboxRequest(request, maxPayloadKb.value * 1024);
   result.value = res;
   lastLatencyMs.value = res.latencyMs;
 
-  emit('payload-evaluated', res, { ...request });
+  if (shouldEmit) {
+    emit('payload-evaluated', res, { ...request });
+  }
 }
 
 // Fonction de partage d'URL de challenge
@@ -531,7 +547,7 @@ function hydrateFromUrl() {
   if (presetParam) {
     const found = SANDBOX_PRESETS.find((p) => p.id === presetParam);
     if (found) {
-      loadPreset(found);
+      loadPreset(found, false);
       return;
     }
   }
@@ -555,7 +571,7 @@ function hydrateFromUrl() {
     selectedPresetId.value = 'custom';
   }
 
-  runEvaluation();
+  runEvaluation(false);
 }
 
 onMounted(() => {
