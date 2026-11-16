@@ -10,10 +10,10 @@
           </div>
           <div>
             <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              Triage & Analyse des Flux en Direct
+              {{ t.cockpit.triage?.title || "Triage & Analyse des Flux en Direct" }}
             </h1>
             <p class="text-xs text-slate-400 font-mono mt-0.5">
-              Centre de Triage SOC • Requêtes Entrantes (Aegis Gate PEP) & Sortantes (Aegis Egress System One)
+              {{ t.cockpit.triage?.subtitle || "Centre de Triage SOC • Requêtes Entrantes (Aegis Gate PEP) & Sortantes (Aegis Egress System One)" }}
             </p>
           </div>
         </div>
@@ -23,8 +23,8 @@
       <div class="flex flex-wrap items-center gap-3">
         <!-- Live Ticking Indicator -->
         <div class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono text-slate-300">
-          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-          <span>Triage Temps Réel (&lt; 38ms)</span>
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+          <span>{{ t.cockpit.triage?.realtime || "Triage Temps Réel (< 38ms)" }}</span>
         </div>
 
         <!-- Toggle View : Kanban vs All Logs -->
@@ -36,7 +36,7 @@
               activeViewTab === 'kanban' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-slate-400 hover:text-slate-200'
             ]"
           >
-            <span>📊 Kanban Menaces</span>
+            <span>{{ t.cockpit.triage?.kanbanTab || "📊 Kanban Menaces" }}</span>
             <span class="px-1.5 py-0.2 rounded-full bg-rose-500/20 text-rose-300 text-[10px]">{{ suspiciousEvents.length }}</span>
           </button>
           
@@ -47,7 +47,7 @@
               activeViewTab === 'compliant' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'text-slate-400 hover:text-slate-200'
             ]"
           >
-            <span>✓ Flux Conformes</span>
+            <span>{{ t.cockpit.triage?.compliantTab || "✓ Flux Conformes" }}</span>
             <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px]">{{ compliantEvents.length }}</span>
           </button>
         </div>
@@ -105,11 +105,11 @@
       </div>
 
       <!-- Right Summary Counts -->
-      <div class="flex items-center gap-4 text-[11px] text-slate-400">
-        <span>Total analysé : <strong class="text-white">{{ totalEventsCount }}</strong></span>
-        <span class="text-rose-400">Bloqués : <strong>{{ blockedCount }}</strong></span>
-        <span class="text-amber-400">Quarantaine : <strong>{{ quarantineCount }}</strong></span>
-        <span class="text-emerald-400">Conformes : <strong>{{ compliantCount }}</strong></span>
+      <div class="flex items-center gap-4 text-[11px] text-slate-400 font-mono">
+        <span>{{ locale === 'fr' ? 'Total analysé :' : 'Total analyzed:' }} <strong class="text-white">{{ totalEventsCount }}</strong></span>
+        <span class="text-rose-400">{{ locale === 'fr' ? 'Bloqués :' : 'Blocked:' }} <strong>{{ blockedCount }}</strong></span>
+        <span class="text-amber-400">{{ locale === 'fr' ? 'Quarantaine :' : 'Quarantine:' }} <strong>{{ quarantineCount }}</strong></span>
+        <span class="text-emerald-400">{{ locale === 'fr' ? 'Conformes :' : 'Clean:' }} <strong>{{ compliantCount }}</strong></span>
       </div>
     </div>
 
@@ -132,7 +132,7 @@
         <div class="flex items-center justify-between pb-3 border-b border-rose-900/40 mb-4">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-rose-500"></span>
-            <h3 class="font-bold text-sm text-rose-300 tracking-wide font-mono">CRITIQUE (BLOQUÉ)</h3>
+            <h3 class="font-bold text-sm text-rose-300 tracking-wide font-mono">{{ locale === 'fr' ? 'CRITIQUE (BLOQUÉ)' : 'CRITICAL (BLOCKED)' }}</h3>
           </div>
           <span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 font-mono text-xs font-bold">
             {{ getEventsBySeverity('CRITICAL').length }}
@@ -205,7 +205,7 @@
         <div class="flex items-center justify-between pb-3 border-b border-amber-900/40 mb-4">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-amber-500"></span>
-            <h3 class="font-bold text-sm text-amber-300 tracking-wide font-mono">ÉLEVÉ (QUARANTAINE)</h3>
+            <h3 class="font-bold text-sm text-amber-300 tracking-wide font-mono">{{ locale === 'fr' ? 'ÉLEVÉ (QUARANTAINE)' : 'HIGH (QUARANTINE)' }}</h3>
           </div>
           <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono text-xs font-bold">
             {{ getEventsBySeverity('HIGH').length }}
@@ -252,19 +252,19 @@
                 @click="triggerAction('quarantine_domain', item.target)"
                 class="px-2 py-1 rounded bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 font-bold transition-all cursor-pointer"
               >
-                ⚠️ Isoler
+                ⚠️ {{ locale === 'fr' ? 'Isoler' : 'Quarantine' }}
               </button>
               <button 
                 @click="openInspectModal(item)"
                 class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all cursor-pointer"
               >
-                🔍 Inspecter
+                🔍 {{ locale === 'fr' ? 'Inspecter' : 'Inspect' }}
               </button>
             </div>
           </div>
 
           <div v-if="getEventsBySeverity('HIGH').length === 0" class="text-center py-12 text-slate-500 text-xs font-mono">
-            Aucun élément en quarantaine.
+            {{ locale === 'fr' ? 'Aucun élément en quarantaine.' : 'No items in quarantine.' }}
           </div>
         </div>
       </div>
@@ -274,7 +274,7 @@
         <div class="flex items-center justify-between pb-3 border-b border-yellow-900/40 mb-4">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-yellow-400"></span>
-            <h3 class="font-bold text-sm text-yellow-200 tracking-wide font-mono">MOYEN / ANOMALIE</h3>
+            <h3 class="font-bold text-sm text-yellow-200 tracking-wide font-mono">{{ locale === 'fr' ? 'MOYEN / ANOMALIE' : 'MEDIUM / ANOMALY' }}</h3>
           </div>
           <span class="px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-200 font-mono text-xs font-bold">
             {{ getEventsBySeverity('MEDIUM').length }}
@@ -333,7 +333,7 @@
         <div class="flex items-center justify-between pb-3 border-b border-blue-900/40 mb-4">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-blue-400"></span>
-            <h3 class="font-bold text-sm text-blue-300 tracking-wide font-mono">FAIBLE / INFO</h3>
+            <h3 class="font-bold text-sm text-blue-300 tracking-wide font-mono">{{ locale === 'fr' ? 'FAIBLE / INFO' : 'LOW / INFO' }}</h3>
           </div>
           <span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-mono text-xs font-bold">
             {{ getEventsBySeverity('LOW').length }}
@@ -347,7 +347,7 @@
             class="p-3.5 bg-slate-950/90 border border-blue-500/30 rounded-xl hover:border-blue-400 transition-all shadow-md group"
           >
             <div class="flex items-center justify-between text-[10px] font-mono mb-2">
-              <span class="text-blue-300 font-bold uppercase">INFO SURVEILLÉE</span>
+              <span class="text-blue-300 font-bold uppercase">{{ locale === 'fr' ? 'INFO SURVEILLÉE' : 'MONITORED INFO' }}</span>
               <span class="text-slate-400">{{ formatDate(item.timestamp) }}</span>
             </div>
 
@@ -360,7 +360,7 @@
           </div>
 
           <div v-if="getEventsBySeverity('LOW').length === 0" class="text-center py-12 text-slate-500 text-xs font-mono">
-            Aucun événement d'information.
+            {{ locale === 'fr' ? "Aucun événement d'information." : "No info events." }}
           </div>
         </div>
       </div>
@@ -373,14 +373,14 @@
         <div>
           <h3 class="text-sm font-bold text-white font-mono flex items-center gap-2">
             <span class="text-emerald-400">✓</span>
-            <span>Registre Intégral des Flux Conformes & Autorisés</span>
+            <span>{{ locale === 'fr' ? 'Registre Intégral des Flux Conformes & Autorisés' : 'Full Log of Compliant & Authorized Traffic' }}</span>
           </h3>
           <p class="text-xs text-slate-400 font-mono mt-0.5">
-            Historique des accès mTLS légitimes, requêtes API autorisées et requêtes DNS saines
+            {{ locale === 'fr' ? 'Historique des accès mTLS légitimes, requêtes API autorisées et requêtes DNS saines' : 'History of legitimate mTLS sessions, authorized API requests, and clean DNS lookups' }}
           </p>
         </div>
         <span class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 font-mono text-xs font-bold border border-emerald-500/20">
-          {{ compliantEvents.length }} requêtes saines logguées
+          {{ compliantEvents.length }} {{ locale === 'fr' ? 'requêtes saines logguées' : 'clean logged requests' }}
         </span>
       </div>
 
@@ -388,15 +388,15 @@
         <table class="w-full text-left text-xs font-mono">
           <thead>
             <tr class="text-slate-400 border-b border-slate-800 bg-slate-950/60">
-              <th class="py-3 px-4">Horodatage</th>
+              <th class="py-3 px-4">{{ locale === 'fr' ? 'Horodatage' : 'Timestamp' }}</th>
               <th class="py-3 px-4">Direction</th>
               <th class="py-3 px-4">Client IP</th>
               <th class="py-3 px-4">Destination / URI</th>
-              <th class="py-3 px-4">Lieu GeoIP</th>
+              <th class="py-3 px-4">{{ locale === 'fr' ? 'Lieu GeoIP' : 'GeoIP Location' }}</th>
               <th class="py-3 px-4">Action</th>
-              <th class="py-3 px-4">Type de flux</th>
-              <th class="py-3 px-4">Latence</th>
-              <th class="py-3 px-4">Moteur</th>
+              <th class="py-3 px-4">{{ locale === 'fr' ? 'Type de flux' : 'Traffic Type' }}</th>
+              <th class="py-3 px-4">{{ locale === 'fr' ? 'Latence' : 'Latency' }}</th>
+              <th class="py-3 px-4">{{ locale === 'fr' ? 'Moteur' : 'Engine' }}</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-800/60">
@@ -422,7 +422,7 @@
 
             <tr v-if="compliantEvents.length === 0">
               <td colspan="9" class="py-8 text-center text-slate-500">
-                Aucune requête conforme dans l'intervalle filtré.
+                {{ locale === 'fr' ? 'Aucune requête conforme dans l\'intervalle filtré.' : 'No compliant requests found in filtered window.' }}
               </td>
             </tr>
           </tbody>
@@ -436,22 +436,22 @@
         <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-lg w-full p-6 shadow-2xl relative font-mono text-xs">
           <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-800">
             <h4 class="text-sm font-bold text-white flex items-center gap-2">
-              <span>🔍 Analyse Détaillée de la Requête</span>
+              <span>🔍 {{ locale === 'fr' ? 'Analyse Détaillée de la Requête' : 'Deep Request Inspection' }}</span>
             </h4>
             <button @click="selectedInspectItem = null" class="text-slate-400 hover:text-white">✕</button>
           </div>
 
           <div class="space-y-2.5 text-slate-300 mb-6 bg-slate-950 p-4 rounded-xl border border-slate-800">
             <div><strong>ID :</strong> <span class="text-cyan-400">{{ selectedInspectItem.id }}</span></div>
-            <div><strong>Horodatage :</strong> {{ selectedInspectItem.timestamp }}</div>
+            <div><strong>{{ locale === 'fr' ? 'Horodatage' : 'Timestamp' }} :</strong> {{ selectedInspectItem.timestamp }}</div>
             <div><strong>Direction :</strong> {{ selectedInspectItem.direction }}</div>
             <div><strong>Client IP :</strong> {{ selectedInspectItem.client_ip }}</div>
-            <div><strong>Cible / URL :</strong> <span class="text-white">{{ selectedInspectItem.target }}</span></div>
-            <div><strong>Type de Menace :</strong> <span class="text-rose-400 font-bold">{{ selectedInspectItem.threat_type }}</span></div>
-            <div><strong>Entropie Shanon :</strong> {{ selectedInspectItem.entropy }}</div>
-            <div><strong>Confiance IA :</strong> {{ ((selectedInspectItem.confidence || 0.95) * 100).toFixed(1) }}%</div>
-            <div><strong>Moteur de décision :</strong> {{ selectedInspectItem.engine }}</div>
-            <div><strong>Lieu GeoIP :</strong> {{ selectedInspectItem.geo?.city }}, {{ selectedInspectItem.geo?.country }}</div>
+            <div><strong>{{ locale === 'fr' ? 'Cible / URL' : 'Target / URL' }} :</strong> <span class="text-white">{{ selectedInspectItem.target }}</span></div>
+            <div><strong>{{ locale === 'fr' ? 'Type de Menace' : 'Threat Type' }} :</strong> <span class="text-rose-400 font-bold">{{ selectedInspectItem.threat_type }}</span></div>
+            <div><strong>{{ locale === 'fr' ? 'Entropie Shannon' : 'Shannon Entropy' }} :</strong> {{ selectedInspectItem.entropy }}</div>
+            <div><strong>{{ locale === 'fr' ? 'Confiance IA' : 'AI Confidence' }} :</strong> {{ ((selectedInspectItem.confidence || 0.95) * 100).toFixed(1) }}%</div>
+            <div><strong>{{ locale === 'fr' ? 'Moteur de décision' : 'Decision Engine' }} :</strong> {{ selectedInspectItem.engine }}</div>
+            <div><strong>{{ locale === 'fr' ? 'Lieu GeoIP' : 'GeoIP Location' }} :</strong> {{ selectedInspectItem.geo?.city }}, {{ selectedInspectItem.geo?.country }}</div>
           </div>
 
           <div class="flex items-center justify-end gap-3">
@@ -459,13 +459,13 @@
               @click="triggerAction('ban_ip', selectedInspectItem.client_ip)"
               class="px-3 py-2 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 font-bold hover:bg-rose-500/30 transition-all cursor-pointer"
             >
-              🚫 Bannir cette IP
+              🚫 {{ locale === 'fr' ? 'Bannir cette IP' : 'Ban this IP' }}
             </button>
             <button 
               @click="selectedInspectItem = null"
               class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all cursor-pointer"
             >
-              Fermer
+              {{ locale === 'fr' ? 'Fermer' : 'Close' }}
             </button>
           </div>
         </div>
@@ -479,6 +479,9 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useSandboxReplay } from '../../composables/useSandboxReplay';
 import { useControls } from '../../composables/useControls';
+import { useI18n } from '../../composables/useI18n';
+
+const { t, locale } = useI18n();
 
 const props = defineProps({
   isDemo: {

@@ -4,9 +4,10 @@ import AegisUnifiedCockpit from '../components/soc/AegisUnifiedCockpit.vue';
 ---
 
 <Layout 
-  title="Aegis Interactive Sandbox • Démonstrateur Zero-Trust & Replay Temps Réel (demo.aegis.aivo.fr)"
-  description="Démonstrateur public et interactif de la suite souveraine Aegis : Fuzzer d'entropie de Shannon en direct, replayer de trafic d'attaques réelles sur 24h et télémétrie silicium RAPL."
+  title="Aegis Interactive Sandbox • Real-Time Zero-Trust & Replay Showcase (demo.aegis.aivo.fr)"
+  description="Public interactive showcase of the Aegis sovereign suite: live Shannon entropy fuzzer, 24h real-world attack replayer, and hardware RAPL energy telemetry."
   isApp={true}
+  lang="en"
 >
   <main class="flex-1 flex flex-col w-full h-full min-h-0 overflow-hidden">
     <AegisUnifiedCockpit isDemo={true} client:only="vue" />

@@ -20,9 +20,9 @@
       <div v-if="isDemo" class="shrink-0 px-4 py-2.5 bg-gradient-to-r from-cyan-950 via-slate-900 to-emerald-950 border-b border-cyan-500/40 text-xs font-mono flex flex-col sm:flex-row items-center justify-between gap-2 shadow-lg z-20">
         <div class="flex items-center gap-2.5 text-cyan-300">
           <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse"></span>
-          <span class="font-extrabold tracking-wide">MODE DÉMONSTRATEUR INTERACTIF</span>
+          <span class="font-extrabold tracking-wide">{{ t.cockpit.demoBanner?.badge || 'MODE DÉMONSTRATEUR INTERACTIF' }}</span>
           <span class="hidden sm:inline text-slate-500">•</span>
-          <span class="hidden sm:inline text-slate-300 text-[11px]">Moteur Zero-Trust exécuté en local (&lt; 0.25 ms) • Télémétrie RAPL &amp; Replay PHP2Shell</span>
+          <span class="hidden sm:inline text-slate-300 text-[11px]">{{ t.cockpit.demoBanner?.engineDesc || 'Moteur Zero-Trust exécuté en local (< 0.25 ms)' }}</span>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <button
@@ -30,21 +30,21 @@
             class="px-3 py-1 rounded-lg bg-red-500/20 hover:bg-red-500/30 border border-red-400/50 text-red-200 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm active:scale-95"
           >
             <span>🔥</span>
-            <span>{{ php2ShellReplay.isRunning ? `Replay PHP2Shell (${php2ShellReplay.currentSecond}s/15s)...` : 'Replay Attaque PHP2Shell' }}</span>
+            <span>{{ php2ShellReplay.isRunning ? (t.cockpit.demoBanner?.php2shellRunning?.replace('{sec}', String(php2ShellReplay.currentSecond)) || `Replay PHP2Shell (${php2ShellReplay.currentSecond}s/15s)...`) : (t.cockpit.demoBanner?.php2shellBtn || 'Replay Attaque PHP2Shell') }}</span>
           </button>
           <button
             @click="switchNav('fuzzer')"
             class="px-3 py-1 rounded-lg bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/40 text-cyan-200 font-bold text-[11px] flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm active:scale-95"
           >
             <span>🔬</span>
-            <span>Tester un payload (Fuzzer)</span>
+            <span>{{ t.cockpit.demoBanner?.fuzzerBtn || 'Tester un payload (Fuzzer)' }}</span>
           </button>
           <button
             @click="toggleReplay"
             class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold text-[11px] flex items-center gap-1 cursor-pointer transition-colors"
-            :title="isPlaying ? 'Mettre en pause le replayer' : 'Relancer le replayer'"
+            :title="isPlaying ? (t.cockpit.demoBanner?.tooltipPause || 'Pause') : (t.cockpit.demoBanner?.tooltipResume || 'Replay')"
           >
-            <span>{{ isPlaying ? '⏸️ Pause Replay' : '▶️ Replay' }}</span>
+            <span>{{ isPlaying ? (t.cockpit.demoBanner?.pause || '⏸️ Pause') : (t.cockpit.demoBanner?.resume || '▶️ Replay') }}</span>
           </button>
         </div>
       </div>
@@ -68,15 +68,10 @@
             <AegisTriageKanban :isDemo="isDemoMode" />
           </div>
 
-          <!-- VUE B : ACTION CENTER DÉDIÉ (DIAGNOSTIC, FLUX, TÉLÉMÉTRIE, CVE, CONTRÔLES, ROADMAP, FUZZER) -->
-          <AegisActionCenter 
-            v-else-if="['audit', 'streams', 'telemetry', 'cve', 'controls', 'roadmap', 'security', 'green', 'compliance', 'fuzzer'].includes(activeNav)"
-            :initialTab="activeNav === 'security' ? 'streams' : activeNav === 'green' ? 'telemetry' : activeNav === 'compliance' ? 'controls' : activeNav"
-            :initialDomain="initialScanDomain"
-            :isDemo="isDemoMode"
-            :key="activeNav"
-            @logout="logout"
-          />
+          <!-- VUE B : FUZZER INTERACTIF DÉDIÉ (SI activeNav === 'fuzzer') -->
+          <div v-else-if="activeNav === 'fuzzer'" class="flex-1 flex flex-col min-w-0 p-4 sm:p-6 lg:p-7 max-w-[1720px] mx-auto w-full h-full overflow-y-auto">
+            <AegisInteractiveFuzzer />
+          </div>
 
           <!-- VUE C : COCKPIT PRINCIPAL VUE D'ENSEMBLE (100% MÉTRIQUES RÉELLES) -->
           <div v-else class="flex-1 flex flex-col min-w-0 p-4 sm:p-6 lg:p-7 max-w-[1720px] mx-auto w-full">
@@ -97,11 +92,11 @@
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-3 pb-3.5 border-b border-slate-800/80">
               <div class="flex items-start sm:items-center gap-3">
                 <span class="px-2.5 py-1 rounded-lg bg-red-500/15 border border-red-500/40 text-red-300 font-mono font-extrabold text-xs shrink-0">
-                  🔥 BENCHMARK PHP2SHELL
+                  {{ t.cockpit.php2shell?.badge || '🔥 BENCHMARK PHP2SHELL' }}
                 </span>
                 <div>
                   <h2 class="text-sm sm:text-base font-extrabold text-white flex flex-wrap items-center gap-2">
-                    <span>Replay Matériel : Attaque PHP2Shell (`CVE-2024-4577` &amp; `CVE-2026-109618`)</span>
+                    <span>{{ t.cockpit.php2shell?.title || 'Replay Matériel : Attaque PHP2Shell (CVE-2024-4577)' }}</span>
                     <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                       -{{ php2ShellDataset.savings.powerReductionPct }}% Watts RAPL • -{{ php2ShellDataset.savings.energySavedJoules }} Joules
                     </span>
@@ -117,7 +112,7 @@
                   @click="startPhp2ShellBenchmarkReplay()"
                   class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 font-mono font-extrabold text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all active:scale-95"
                 >
-                  <span>{{ php2ShellReplay.isRunning ? '🔄 Replay en cours...' : '▶️ Lancer le Replay Comparatif (15s)' }}</span>
+                  <span>{{ php2ShellReplay.isRunning ? (t.cockpit.php2shell?.runningBtn?.replace('{sec}', String(php2ShellReplay.currentSecond)) || '⏳ Replay en cours...') : (t.cockpit.php2shell?.runBtn || '▶️ Lancer le Replay Comparatif (15s)') }}</span>
                 </button>
                 <button
                   @click="toggleProtectionMode"
@@ -128,13 +123,13 @@
                       : 'bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border-emerald-500/40'
                   ]"
                 >
-                  {{ protectionEnabled ? '⚠️ Simuler SANS Bouclier (24.14 W)' : '🛡️ Réactiver Bouclier Aegis (5.81 W)' }}
+                  {{ protectionEnabled ? (locale === 'fr' ? '⚠️ Simuler SANS Bouclier (24.14 W)' : '⚠️ Simulate WITHOUT Shield (24.14 W)') : (locale === 'fr' ? '🛡️ Réactiver Bouclier Aegis (5.81 W)' : '🛡️ Re-enable Aegis Shield (5.81 W)') }}
                 </button>
                 <button
                   @click="switchNav('fuzzer')"
                   class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 font-mono font-bold text-xs cursor-pointer transition-colors"
                 >
-                  🔬 Fuzzer PHP2Shell ➔
+                  {{ t.cockpit.php2shell?.openFuzzerBtn || '🔬 Fuzzer PHP2Shell ➔' }}
                 </button>
               </div>
             </div>
@@ -142,7 +137,7 @@
             <!-- Barre de progression du Replay Live -->
             <div v-if="php2ShellReplay.isRunning" class="mt-3">
               <div class="flex items-center justify-between text-[11px] font-mono text-cyan-300 mb-1">
-                <span>⚡ Salve d'exploitation PHP2Shell (`%ADd allow_url_include=1` + `auto_prepend_file=php://input`) en cours...</span>
+                <span>⚡ {{ locale === 'fr' ? "Salve d'exploitation PHP2Shell en cours..." : "PHP2Shell exploit burst running..." }}</span>
                 <span class="font-bold">{{ php2ShellReplay.currentSecond }}s / {{ php2ShellReplay.totalSeconds }}s ({{ php2ShellReplay.progressPct }}%)</span>
               </div>
               <div class="w-full h-2 rounded-full bg-slate-950 overflow-hidden border border-slate-800">
@@ -167,32 +162,32 @@
                 <div class="flex items-center justify-between mb-2">
                   <span class="text-xs font-extrabold text-emerald-400 flex items-center gap-1.5">
                     <span>🛡️</span>
-                    <span>AVEC BOUCLIER AEGIS (Zero-Trust Edge PEP)</span>
+                    <span>{{ t.cockpit.php2shell?.shieldOnTitle || 'AVEC BOUCLIER AEGIS' }}</span>
                   </span>
                   <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">
-                    100% BLOQUÉ (HTTP 403)
+                    {{ locale === 'fr' ? '100% BLOQUÉ (HTTP 403)' : '100% BLOCKED (HTTP 403)' }}
                   </span>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
                   <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
-                    <div class="text-[10px] text-slate-400">Puissance RAPL</div>
+                    <div class="text-[10px] text-slate-400">{{ locale === 'fr' ? 'Puissance RAPL' : 'RAPL Power' }}</div>
                     <div class="text-sm font-black text-emerald-400">{{ php2ShellReplay.withShieldLive.watts.toFixed(2) }} W</div>
-                    <div class="text-[9px] text-slate-500">Pic 16.01 W</div>
+                    <div class="text-[9px] text-slate-500">{{ locale === 'fr' ? 'Pic 16.01 W' : 'Peak 16.01 W' }}</div>
                   </div>
                   <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
-                    <div class="text-[10px] text-slate-400">CPU Cible PHP</div>
+                    <div class="text-[10px] text-slate-400">{{ locale === 'fr' ? 'CPU Cible PHP' : 'PHP Target CPU' }}</div>
                     <div class="text-sm font-black text-emerald-400">{{ php2ShellReplay.withShieldLive.cpuPct.toFixed(1) }} %</div>
                     <div class="text-[9px] text-slate-500">Gate: 1.54%</div>
                   </div>
                   <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
-                    <div class="text-[10px] text-slate-400">Énergie (15s)</div>
+                    <div class="text-[10px] text-slate-400">{{ locale === 'fr' ? 'Énergie (15s)' : 'Energy (15s)' }}</div>
                     <div class="text-sm font-black text-cyan-300">{{ php2ShellReplay.withShieldLive.joules.toFixed(2) }} J</div>
-                    <div class="text-[9px] text-slate-500">Latence 17.33 ms</div>
+                    <div class="text-[9px] text-slate-500">{{ locale === 'fr' ? 'Latence 17.33 ms' : 'Latency 17.33 ms' }}</div>
                   </div>
                   <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
-                    <div class="text-[10px] text-slate-400">Attaques Stoppées</div>
+                    <div class="text-[10px] text-slate-400">{{ locale === 'fr' ? 'Attaques Stoppées' : 'Threats Stopped' }}</div>
                     <div class="text-sm font-black text-white">{{ php2ShellReplay.withShieldLive.blocked403 }} / 602</div>
-                    <div class="text-[9px] text-emerald-400">0 compromission</div>
+                    <div class="text-[9px] text-emerald-400">{{ locale === 'fr' ? '0 compromission' : '0 breach' }}</div>
                   </div>
                 </div>
               </div>
@@ -209,30 +204,30 @@
                 <div class="flex items-center justify-between mb-2">
                   <span class="text-xs font-extrabold text-red-400 flex items-center gap-1.5">
                     <span>🔥</span>
-                    <span>SANS BOUCLIER (PHP-FPM 8.3 Exposé Directement)</span>
+                    <span>{{ t.cockpit.php2shell?.shieldOffTitle || 'SANS BOUCLIER' }}</span>
                   </span>
                   <span class="text-[10px] px-2 py-0.5 rounded bg-red-500/20 text-red-300 font-bold border border-red-500/30">
-                    COMPROMIS (HTTP 200 RCE)
+                    {{ locale === 'fr' ? 'COMPROMIS (HTTP 200 RCE)' : 'COMPROMISED (HTTP 200 RCE)' }}
                   </span>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
                   <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
-                    <div class="text-[10px] text-slate-400">Puissance RAPL</div>
+                    <div class="text-[10px] text-slate-400">{{ locale === 'fr' ? 'Puissance RAPL' : 'RAPL Power' }}</div>
                     <div class="text-sm font-black text-red-400">{{ php2ShellReplay.withoutShieldLive.watts.toFixed(2) }} W</div>
-                    <div class="text-[9px] text-red-300/70">Pic 37.58 W (x4.1)</div>
+                    <div class="text-[9px] text-red-300/70">{{ locale === 'fr' ? 'Pic 37.58 W (x4.1)' : 'Peak 37.58 W (x4.1)' }}</div>
                   </div>
                   <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
-                    <div class="text-[10px] text-slate-400">CPU Cible PHP</div>
+                    <div class="text-[10px] text-slate-400">{{ locale === 'fr' ? 'CPU Cible PHP' : 'PHP Target CPU' }}</div>
                     <div class="text-sm font-black text-red-400">{{ php2ShellReplay.withoutShieldLive.cpuPct.toFixed(1) }} %</div>
-                    <div class="text-[9px] text-red-300/70">Moy. 537.98%</div>
+                    <div class="text-[9px] text-red-300/70">{{ locale === 'fr' ? 'Moy. 537.98%' : 'Avg 537.98%' }}</div>
                   </div>
                   <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
-                    <div class="text-[10px] text-slate-400">Énergie (15s)</div>
+                    <div class="text-[10px] text-slate-400">{{ locale === 'fr' ? 'Énergie (15s)' : 'Energy (15s)' }}</div>
                     <div class="text-sm font-black text-amber-400">{{ php2ShellReplay.withoutShieldLive.joules.toFixed(2) }} J</div>
-                    <div class="text-[9px] text-red-300/70">Latence 2619 ms</div>
+                    <div class="text-[9px] text-red-300/70">{{ locale === 'fr' ? 'Latence 2619 ms' : 'Latency 2619 ms' }}</div>
                   </div>
                   <div class="p-2 rounded-lg bg-slate-950/80 border border-slate-800/80">
-                    <div class="text-[10px] text-slate-400">Shells Exécutés</div>
+                    <div class="text-[10px] text-slate-400">{{ locale === 'fr' ? 'Shells Exécutés' : 'Spawned Shells' }}</div>
                     <div class="text-sm font-black text-red-300">{{ php2ShellReplay.withoutShieldLive.compromised200 }} / 126</div>
                     <div class="text-[9px] text-red-400">Fork Bomb &amp; C2</div>
                   </div>
@@ -273,12 +268,12 @@
           <!-- COCKPIT FOOTER -->
           <footer class="mt-7 pt-4 border-t border-slate-800/80 text-[11px] font-mono text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div class="flex items-center gap-2">
-              <span>Aegis Unified Cockpit v5.3 • Go Control Plane &amp; Open-Core Éthique (AGPLv3)</span>
+              <span>{{ t.cockpit?.footer?.version || 'Aegis Community Edition v1.1.0 • AGPLv3' }}</span>
             </div>
             <div class="flex items-center gap-4 text-slate-400">
-              <span>🇫🇷 Zéro Donnée Fictive</span>
+              <span>{{ t.cockpit?.footer?.zeroFake || 'Zéro Donnée Fictive • In-Browser Sandbox' }}</span>
               <span>•</span>
-              <span>PostgreSQL &amp; Sonde Linux RAPL Temps Réel</span>
+              <span>{{ t.cockpit?.footer?.realtime || 'PostgreSQL & Sonde Linux RAPL' }}</span>
             </div>
           </footer>
 
@@ -315,7 +310,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import AegisLogo from './AegisLogo.vue';
-import AegisActionCenter from './AegisActionCenter.vue';
+import AegisInteractiveFuzzer from './AegisInteractiveFuzzer.vue';
 import AegisTriageKanban from './AegisTriageKanban.vue';
 import AegisNodeEnrollModal from './AegisNodeEnrollModal.vue';
 import CockpitSidebar from './cockpit/CockpitSidebar.vue';
@@ -328,6 +323,9 @@ import CockpitExportModal from './cockpit/CockpitExportModal.vue';
 import { useAegisTheme } from '../../composables/useAegisTheme';
 import { useAuth } from '../../composables/useAuth';
 import { useSandboxReplay } from '../../composables/useSandboxReplay';
+import { useI18n } from '../../composables/useI18n';
+
+const { t, locale } = useI18n();
 
 const props = withDefaults(defineProps<{
   initialView?: string;
