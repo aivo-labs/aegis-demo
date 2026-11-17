@@ -8,6 +8,17 @@ interface Props {
 
 const { lang = 'en' } = Astro.props;
 const t = useTranslations(lang).community;
+
+const blogAllUrl = lang === 'fr' ? 'https://aivo.fr/blog' : 'https://aivo.fr/en/blog';
+const article1Url = lang === 'fr' 
+  ? 'https://aivo.fr/blog/cryptographie-post-quantique-ml-kem-gouvernance-ia-mcp/' 
+  : 'https://aivo.fr/en/blog/post-quantum-cryptography-ml-kem-two-door-mcp-ai-governance/';
+const article2Url = lang === 'fr' 
+  ? 'https://aivo.fr/blog/mesure-physique-rapl-vs-ratios-monetaires/' 
+  : 'https://aivo.fr/en/blog/physical-rapl-measurement-vs-carbon-spend-ratios/';
+const article3Url = lang === 'fr' 
+  ? 'https://aivo.fr/blog/entropie-shannon-decision-zero-trust-ia-frugale/' 
+  : 'https://aivo.fr/en/blog/shannon-entropy-zero-trust-decision-engine-frugal-ai/';
 ---
 
 <section class="relative py-20 md:py-32 bg-slate-950 border-b border-slate-800/80 overflow-hidden">
@@ -45,7 +56,7 @@ const t = useTranslations(lang).community;
                 </svg>
               </div>
               <span class="text-xs font-mono px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-semibold">
-                ★ v1.0-beta
+                ★ v1.1-beta
               </span>
             </div>
 
@@ -100,7 +111,7 @@ const t = useTranslations(lang).community;
 
         <!-- CARTE SUBSTACK -->
         <a 
-          href="https://aivo.substack.com" 
+          href="https://aivolabs.substack.com/" 
           target="_blank" 
           rel="noopener noreferrer"
           class="p-6 rounded-2xl bg-slate-900 border border-slate-800 hover:border-emerald-500/50 shadow-xl transition-all group flex flex-col justify-between"
@@ -144,7 +155,7 @@ const t = useTranslations(lang).community;
           </h3>
         </div>
         <a 
-          href="https://aivo.fr/blog" 
+          href={blogAllUrl} 
           target="_blank" 
           rel="noopener noreferrer"
           class="text-xs font-mono text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1.5 font-bold"
@@ -156,7 +167,7 @@ const t = useTranslations(lang).community;
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <!-- ARTICLE 1 : NIS 2 & Norme VS -->
+        <!-- ARTICLE 1 : PQC ML-KEM & Two-Door MCP -->
         <article class="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4">
           <div class="space-y-3">
             <div class="flex items-center justify-between text-xs font-mono text-slate-400">
@@ -164,7 +175,9 @@ const t = useTranslations(lang).community;
               <span>{t.article1ReadTime}</span>
             </div>
             <h4 class="text-base font-bold text-white hover:text-cyan-400 transition-colors leading-snug">
-              {t.article1Title}
+              <a href={article1Url} target="_blank" rel="noopener noreferrer">
+                {t.article1Title}
+              </a>
             </h4>
             <p class="text-xs text-slate-400 leading-relaxed">
               {t.article1Desc}
@@ -172,7 +185,7 @@ const t = useTranslations(lang).community;
           </div>
           <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
             <span class="text-slate-500">{t.byAuthor}</span>
-            <a href="https://aivo.fr/blog/directive-nis2-norme-vs-pme" target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1">
+            <a href={article1Url} target="_blank" rel="noopener noreferrer" class="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1">
               <span>{t.readArticle}</span>
               <span>➔</span>
             </a>
@@ -187,7 +200,9 @@ const t = useTranslations(lang).community;
               <span>{t.article2ReadTime}</span>
             </div>
             <h4 class="text-base font-bold text-white hover:text-emerald-400 transition-colors leading-snug">
-              {t.article2Title}
+              <a href={article2Url} target="_blank" rel="noopener noreferrer">
+                {t.article2Title}
+              </a>
             </h4>
             <p class="text-xs text-slate-400 leading-relaxed">
               {t.article2Desc}
@@ -195,14 +210,14 @@ const t = useTranslations(lang).community;
           </div>
           <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
             <span class="text-slate-500">{t.byAuthor}</span>
-            <a href="https://aivo.fr/blog/mesure-physique-rapl-vs-ratios-monetaires" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1">
+            <a href={article2Url} target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1">
               <span>{t.readArticle}</span>
               <span>➔</span>
             </a>
           </div>
         </article>
 
-        <!-- ARTICLE 3 : SaaS Tax -->
+        <!-- ARTICLE 3 : Entropie Shannon & PEP Frugal -->
         <article class="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4">
           <div class="space-y-3">
             <div class="flex items-center justify-between text-xs font-mono text-slate-400">
@@ -210,7 +225,9 @@ const t = useTranslations(lang).community;
               <span>{t.article3ReadTime}</span>
             </div>
             <h4 class="text-base font-bold text-white hover:text-purple-400 transition-colors leading-snug">
-              {t.article3Title}
+              <a href={article3Url} target="_blank" rel="noopener noreferrer">
+                {t.article3Title}
+              </a>
             </h4>
             <p class="text-xs text-slate-400 leading-relaxed">
               {t.article3Desc}
@@ -218,7 +235,7 @@ const t = useTranslations(lang).community;
           </div>
           <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
             <span class="text-slate-500">{t.byAuthor}</span>
-            <a href="https://aivo.fr/blog/la-saas-tax-etouffe-les-pme" target="_blank" rel="noopener noreferrer" class="text-purple-400 hover:text-purple-300 font-semibold flex items-center gap-1">
+            <a href={article3Url} target="_blank" rel="noopener noreferrer" class="text-purple-400 hover:text-purple-300 font-semibold flex items-center gap-1">
               <span>{t.readArticle}</span>
               <span>➔</span>
             </a>
