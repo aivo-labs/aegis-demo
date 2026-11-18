@@ -68,6 +68,8 @@
         :blockedByPatchCount="blockedByPatchCount"
         :exposedCves="exposedCves"
         :catalogCves="catalogCves"
+        :isSyncing="isSyncing"
+        @sync-certfr="handleSyncCertFr"
       />
 
       <ControlsPanel 
@@ -152,7 +154,7 @@ const {
 } = useLiveStreams({ isDemo: props.isDemo });
 
 const { 
-  activeRulesCount, blockedByPatchCount, exposedCves, catalogCves, fetchCveFeed 
+  activeRulesCount, blockedByPatchCount, exposedCves, catalogCves, isSyncing, fetchCveFeed, syncCertFr 
 } = useCveFeed({ isDemo: props.isDemo });
 
 const { 
@@ -250,6 +252,11 @@ async function handlePurgeClean() {
     showToast(msg);
     fetchLiveStreams();
   }
+}
+
+async function handleSyncCertFr() {
+  await syncCertFr();
+  showToast('✓ Synchronisation souveraine CERT-FR effectuée.');
 }
 
 let pollTimer: any = null;
