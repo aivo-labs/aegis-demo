@@ -549,9 +549,21 @@ export interface SandboxCvePayload {
 }
 
 export const SANDBOX_CVE_FEED: SandboxCvePayload = {
-  active_rules_count: 6,
+  active_rules_count: 7,
   blocked_by_virtual_patch_count: 867,
   exposed_cves: [
+    {
+      id: 'CVE-2026-114938',
+      name: 'Java4Shell — Corruption mémoire Base64 OpenJDK (Keycloak)',
+      title: 'Java4Shell — Corruption mémoire Base64 OpenJDK AVX-512 & RCE (Keycloak)',
+      component: 'OpenJDK Vectorized Base64 (AVX-512 VBMI) / Keycloak',
+      severity: 'CRITICAL',
+      cvss: 9.8,
+      description: 'Décodeur Base64 OpenJDK vulnérable sur processeurs AVX-512 VBMI permettant l\'exécution de code à distance pré-authentification.',
+      remediation: 'Passer JAVA_OPTS_APPEND="-XX:-UseBASE64Intrinsics" sur Keycloak et activer le Sinkhole DNS Aegis Egress.',
+      status: 'MITIGATED',
+      is_active_defense: true,
+    },
     {
       id: 'CVE-2024-4577',
       name: 'Exécution de code à distance PHP-CGI (RCE)',
@@ -578,6 +590,16 @@ export const SANDBOX_CVE_FEED: SandboxCvePayload = {
     },
   ],
   catalog_cves: [
+    {
+      id: 'CVE-2026-114938',
+      name: 'Java4Shell — Corruption mémoire Base64 OpenJDK AVX-512 (Keycloak)',
+      component: 'OpenJDK Vectorized Base64 (AVX-512 VBMI) / Keycloak',
+      severity: 'CRITICAL',
+      cvss: 9.8,
+      description: 'Décodeur Base64 OpenJDK vulnérable sur processeurs AVX-512 VBMI permettant l\'exécution de code à distance pré-authentification sur Keycloak.',
+      status: 'active',
+      is_active_defense: true,
+    },
     {
       id: 'CVE-2026-109618',
       name: 'Dépassement de tampon volumétrique (Buffer/Heap Overflow) & Reverse Shell',
