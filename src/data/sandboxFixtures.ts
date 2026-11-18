@@ -554,13 +554,13 @@ export const SANDBOX_CVE_FEED: SandboxCvePayload = {
   exposed_cves: [
     {
       id: 'CVE-2026-114938',
-      name: 'Java4Shell — Corruption mémoire Base64 OpenJDK (Keycloak)',
-      title: 'Java4Shell — Corruption mémoire Base64 OpenJDK AVX-512 & RCE (Keycloak)',
-      component: 'OpenJDK Vectorized Base64 (AVX-512 VBMI) / Keycloak',
+      name: 'Java4Shell — Corruption mémoire Base64 OpenJDK (Jira, Jenkins, Keycloak)',
+      title: 'Java4Shell — Corruption mémoire Base64 OpenJDK AVX-512 & RCE (Jira, Jenkins, Keycloak)',
+      component: 'OpenJDK HotSpot Vectorized Base64 (AVX-512 VBMI) / Jira, Jenkins, Keycloak',
       severity: 'CRITICAL',
       cvss: 9.8,
       description: 'Décodeur Base64 OpenJDK vulnérable sur processeurs AVX-512 VBMI permettant l\'exécution de code à distance pré-authentification.',
-      remediation: 'Passer JAVA_OPTS_APPEND="-XX:-UseBASE64Intrinsics" sur Keycloak et activer le Sinkhole DNS Aegis Egress.',
+      remediation: 'Passer JAVA_OPTS_APPEND="-XX:-UseBASE64Intrinsics" ou -XX:UseAVX=2 sur vos JVM Java et activer le Sinkhole DNS Aegis Egress.',
       status: 'MITIGATED',
       is_active_defense: true,
     },
@@ -592,11 +592,11 @@ export const SANDBOX_CVE_FEED: SandboxCvePayload = {
   catalog_cves: [
     {
       id: 'CVE-2026-114938',
-      name: 'Java4Shell — Corruption mémoire Base64 OpenJDK AVX-512 (Keycloak)',
-      component: 'OpenJDK Vectorized Base64 (AVX-512 VBMI) / Keycloak',
+      name: 'Java4Shell — Corruption mémoire Base64 OpenJDK AVX-512 (Jira, Jenkins, Keycloak)',
+      component: 'OpenJDK HotSpot Vectorized Base64 (AVX-512 VBMI) / Jira, Jenkins, Keycloak',
       severity: 'CRITICAL',
       cvss: 9.8,
-      description: 'Décodeur Base64 OpenJDK vulnérable sur processeurs AVX-512 VBMI permettant l\'exécution de code à distance pré-authentification sur Keycloak.',
+      description: 'Décodeur Base64 OpenJDK vulnérable sur processeurs AVX-512 VBMI permettant l\'exécution de code à distance pré-authentification sur Keycloak, Jira ou Jenkins.',
       status: 'active',
       is_active_defense: true,
     },
