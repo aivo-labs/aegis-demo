@@ -1,3 +1,24 @@
 # Cloudflare Pages edge redirects & rewrites
 # Rewrite root path to /demo so demo.aegis.aivo.fr immediately serves the Sandbox Cockpit
 /   /demo   200
+
+# Auth and app fallbacks to demo sandbox
+/api/auth/*     /demo   302
+/login          /demo   302
+/login/*        /demo   302
+/fr/login       /fr/demo 302
+/fr/login/*     /fr/demo 302
+/app            /demo   302
+/app/*          /demo   302
+
+# Redirect external production pages to the real site
+/docs           https://aegis.aivo.fr/docs/ 302
+/docs/*         https://aegis.aivo.fr/docs/:splat 302
+/get-started    https://aegis.aivo.fr/get-started/ 302
+/get-started/*  https://aegis.aivo.fr/get-started/ 302
+/partenaires    https://aegis.aivo.fr/partenaires/ 302
+/partenaires/*  https://aegis.aivo.fr/partenaires/ 302
+/legal          https://aegis.aivo.fr/legal/ 302
+/legal/*        https://aegis.aivo.fr/legal/ 302
+/modules/*      https://aegis.aivo.fr/ 302
+/blog/*         https://aivo.fr/blog 302

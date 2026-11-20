@@ -47,16 +47,14 @@ export function useAuth() {
         localStorage.removeItem('aegis_auth');
         localStorage.removeItem('aegis_cached_summary');
       } catch {}
-    }
-    const { redirectUrl } = await triggerLogout();
-    if (typeof window !== 'undefined') {
-      window.location.href = redirectUrl || '/login/?logout=true';
+      const isFr = window.location.pathname.startsWith('/fr');
+      window.location.href = isFr ? '/fr/demo' : '/demo';
     }
   }
 
   function startLoginFlow(): void {
     if (typeof window !== 'undefined') {
-      window.location.href = '/api/auth/login';
+      window.location.href = 'https://aegis.aivo.fr/login/';
     }
   }
 

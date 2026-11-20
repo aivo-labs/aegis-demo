@@ -33,26 +33,24 @@
 
           <div class="space-y-2 pt-2">
             <a 
-              href="/partenaires" 
+              href="https://aegis.aivo.fr/partenaires/" 
+              target="_blank"
+              rel="noopener noreferrer"
               class="block p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white transition-all font-semibold"
             >
-              🤝 Programme Partenaire &amp; Audit d'Urgence
+              🤝 Programme Partenaire &amp; Audit d'Urgence ↗
             </a>
-            <button 
-              @click="$emit('switch-nav', 'roadmap'); $emit('close');" 
-              class="w-full text-left p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-purple-300 hover:text-white transition-all font-semibold cursor-pointer"
+            <a 
+              href="https://aegis.aivo.fr" 
+              target="_blank"
+              rel="noopener noreferrer"
+              class="block p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-purple-300 hover:text-white transition-all font-semibold"
             >
-              🗺️ Voir la Roadmap Publique (v1.5 vs v2.0)
-            </button>
+              🗺️ Documentation &amp; Roadmap Officielle ↗
+            </a>
           </div>
 
-          <div class="pt-4 border-t border-slate-800 flex justify-between items-center">
-            <button 
-              @click="$emit('logout')"
-              class="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/40 text-rose-300 font-bold cursor-pointer"
-            >
-              🚪 Déconnexion
-            </button>
+          <div class="pt-4 border-t border-slate-800 flex justify-end items-center">
             <button 
               @click="$emit('close')"
               class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold cursor-pointer"

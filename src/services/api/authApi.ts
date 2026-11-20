@@ -19,6 +19,9 @@ export interface AuthStatusResponse {
 }
 
 export async function fetchAuthStatus(): Promise<AuthStatusResponse> {
+  if (typeof window === 'undefined') {
+    return { authenticated: false };
+  }
   try {
     const res = await fetch('/api/auth/me', {
       method: 'GET',
@@ -48,15 +51,16 @@ export async function fetchAuthStatus(): Promise<AuthStatusResponse> {
 }
 
 export async function triggerLogout(): Promise<{ success: boolean; redirectUrl: string }> {
-  const fallbackUrl = '/login/?logout=true';
+  const fallbackUrl = '/demo';
+  if (typeof window === 'undefined') {
+    return { success: true, redirectUrl: fallbackUrl };
+  }
   try {
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.removeItem('aegis_auth');
-        localStorage.removeItem('aegis_cached_summary');
-        sessionStorage.clear();
-      } catch {}
-    }
+    try {
+      localStorage.removeItem('aegis_auth');
+      localStorage.removeItem('aegis_cached_summary');
+      sessionStorage.clear();
+    } catch {}
     const res = await fetch('/api/auth/logout', {
       method: 'POST',
       headers: {

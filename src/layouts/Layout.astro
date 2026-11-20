@@ -92,78 +92,30 @@ if (pathname.startsWith('/docs')) {
 					</div>
 				</a>
 
-				<!-- 2. CENTRE : Ressources (Documentation, Blog, Discord) + Devenir partenaire -->
-				<nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-					<!-- Dropdown Ressources -->
-					<div class="relative group">
-						<button 
-							type="button"
-							class="flex items-center gap-1.5 py-2 hover:text-emerald-400 transition-colors cursor-pointer font-medium"
-						>
-							<span>{t.resources}</span>
-							<svg class="w-4 h-4 text-slate-400 group-hover:text-emerald-400 group-hover:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-							</svg>
-						</button>
-
-						<!-- Menu déroulant Ressources -->
-						<div class="absolute left-0 top-full pt-2 w-60 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-							<div class="bg-slate-900/95 backdrop-blur-xl border border-slate-800 rounded-2xl p-2 shadow-2xl space-y-1">
-								<a href={lang === 'fr' ? "/docs/fr/" : "/docs/"} class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-emerald-300 transition-colors">
-									<span class="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400">
-										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-										</svg>
-									</span>
-									<div>
-										<div class="text-xs font-bold text-white">{t.docs}</div>
-										<div class="text-[10px] text-slate-400 font-mono">{t.docsDesc}</div>
-									</div>
-								</a>
-
-								<a href="https://aivo.fr/blog" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-emerald-300 transition-colors">
-									<span class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/25 flex items-center justify-center text-cyan-400">
-										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
-										</svg>
-									</span>
-									<div>
-										<div class="text-xs font-bold text-white">{t.blog}</div>
-										<div class="text-[10px] text-slate-400 font-mono">{t.blogDesc}</div>
-									</div>
-								</a>
-
-								<a href="https://discord.gg/52vaQx6M5F" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-slate-800/80 text-slate-200 hover:text-emerald-300 transition-colors">
-									<span class="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/25 flex items-center justify-center text-indigo-400">
-										<svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
-											<path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/>
-										</svg>
-									</span>
-									<div>
-										<div class="text-xs font-bold text-white">{t.discord}</div>
-										<div class="text-[10px] text-slate-400 font-mono">{t.discordDesc}</div>
-									</div>
-								</a>
-							</div>
-						</div>
-					</div>
-
-					<!-- Lien vers Cockpit SOC -->
-					<a href="/app/" class="hover:text-emerald-400 transition-colors font-semibold text-slate-200 flex items-center gap-1.5">
-						<span>Cockpit SOC</span>
-						<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+				<!-- 2. CENTRE : Navigation Démo (Vue d'ensemble, Fuzzer, Triage SOC) + Documentation -->
+				<nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
+					<!-- Lien Vue d'ensemble (Dashboard Replay) -->
+					<a href={lang === 'fr' ? "/fr/demo" : "/demo"} class="hover:text-cyan-300 transition-colors flex items-center gap-1.5 font-semibold text-xs font-mono">
+						<span>📊</span>
+						<span>{lang === 'fr' ? "Vue d'ensemble" : "Overview"}</span>
 					</a>
 
-					<!-- Lien vers Démo Sandbox Replay -->
-					<a href="/demo" class="px-2.5 py-1 rounded-xl bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-400/30 text-cyan-300 hover:text-white transition-all text-xs font-mono font-bold flex items-center gap-1.5 shadow-sm">
-						<span>🧪</span>
-						<span>{lang === 'fr' ? 'Démo Sandbox' : 'Live Sandbox'}</span>
-						<span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+					<!-- Lien Fuzzer et entropie -->
+					<a href={lang === 'fr' ? "/fr/demo?tab=fuzzer" : "/demo?tab=fuzzer"} class="hover:text-emerald-300 transition-colors flex items-center gap-1.5 font-semibold text-xs font-mono">
+						<span>🔬</span>
+						<span>{lang === 'fr' ? "Fuzzer & Entropie" : "Fuzzer"}</span>
 					</a>
 
-					<!-- Lien direct Documentation -->
-					<a href="/docs/" class="hover:text-emerald-400 transition-colors flex items-center gap-1.5 font-semibold text-slate-200">
-						<span>{t.docs}</span>
+					<!-- Lien Triage SOC -->
+					<a href={lang === 'fr' ? "/fr/demo?tab=triage" : "/demo?tab=triage"} class="hover:text-amber-300 transition-colors flex items-center gap-1.5 font-semibold text-xs font-mono">
+						<span>📋</span>
+						<span>{lang === 'fr' ? "Triage SOC" : "SOC Triage"}</span>
+					</a>
+
+					<!-- Lien Externe Documentation -->
+					<a href="https://aegis.aivo.fr/docs/" target="_blank" rel="noopener noreferrer" class="hover:text-slate-100 transition-colors flex items-center gap-1 text-xs font-mono text-slate-400">
+						<span>Documentation</span>
+						<span class="text-[10px]">↗</span>
 					</a>
 				</nav>
 
@@ -265,15 +217,15 @@ if (pathname.startsWith('/docs')) {
 						</div>
 					</div>
 
-					<!-- Bouton Login Client / Partenaire -->
+					<!-- Bouton CTA vers la solution réelle -->
 					<a 
-						href={lang === 'fr' ? "/fr/login/" : "/login/"} 
+						href="https://aegis.aivo.fr/get-started/" 
+						target="_blank"
+						rel="noopener noreferrer"
 						class="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-extrabold text-xs font-mono shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/35 transition-all active:scale-95 flex items-center gap-1.5"
 					>
-						<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-						</svg>
-						<span>{t.login}</span>
+						<span>{lang === 'fr' ? 'Accéder à Aegis' : 'Get Started'}</span>
+						<span class="text-xs">↗</span>
 					</a>
 				</div>
 
@@ -293,14 +245,15 @@ if (pathname.startsWith('/docs')) {
 				<div class="flex items-center gap-3">
 					<AegisLogo size="sm" />
 					<span class="font-bold text-white text-sm">Aegis</span>
-					<span class="text-slate-500 font-mono">{t.footerTagline}</span>
+					<span class="text-slate-500 font-mono">• {lang === 'fr' ? "Démonstrateur Interactif & Sandbox Replay (AGPLv3)" : "Interactive Showcase & Sandbox Replay (AGPLv3)"}</span>
 				</div>
 				<div class="flex flex-wrap items-center gap-6 font-mono text-[11px]">
-					<a href={lang === 'fr' ? "/docs/fr/" : "/docs/"} class="hover:text-emerald-400">{t.footerDocs}</a>
-					<a href={lang === 'fr' ? "/fr/partenaires/" : "/partenaires/"} class="hover:text-emerald-400">{t.footerPartners}</a>
-					<a href={lang === 'fr' ? "/fr/get-started/" : "/get-started/"} class="hover:text-emerald-400">{t.footerGetStarted}</a>
-					<a href={lang === 'fr' ? "/fr/login/" : "/login/"} class="hover:text-emerald-400">{t.footerLogin}</a>
-					<a href={lang === 'fr' ? "/fr/legal/" : "/legal/"} class="hover:text-emerald-400 text-slate-500 hover:text-slate-300">{t.footerLegal}</a>
+					<a href={lang === 'fr' ? "/fr/demo" : "/demo"} class="hover:text-cyan-400">{lang === 'fr' ? "Vue d'ensemble" : "Overview"}</a>
+					<a href={lang === 'fr' ? "/fr/demo?tab=fuzzer" : "/demo?tab=fuzzer"} class="hover:text-emerald-400">{lang === 'fr' ? "Fuzzer" : "Fuzzer"}</a>
+					<a href={lang === 'fr' ? "/fr/demo?tab=triage" : "/demo?tab=triage"} class="hover:text-amber-400">{lang === 'fr' ? "Triage SOC" : "SOC Triage"}</a>
+					<a href="https://aegis.aivo.fr/docs/" target="_blank" rel="noopener noreferrer" class="hover:text-slate-200">Documentation ↗</a>
+					<a href="https://aegis.aivo.fr" target="_blank" rel="noopener noreferrer" class="hover:text-slate-200">{lang === 'fr' ? "Site Officiel" : "Official Site"} ↗</a>
+					<a href="https://github.com/aivo-labs/aegis" target="_blank" rel="noopener noreferrer" class="hover:text-slate-200">GitHub ↗</a>
 				</div>
 			</div>
 		</footer>

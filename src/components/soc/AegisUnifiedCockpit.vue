@@ -6,8 +6,7 @@
       <div class="max-w-md w-full p-8 rounded-3xl bg-slate-900 border border-slate-800 text-center font-mono space-y-4 shadow-2xl">
         <AegisLogo size="lg" class="mx-auto" />
         <h2 class="text-xl font-bold text-white font-sans">Session Non Autorisée</h2>
-        <p class="text-xs text-slate-400 font-sans">Redirection sécurisée vers la page de connexion...</p>
-        <a href="/login/" class="inline-block px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs">
+        <a href="https://aegis.aivo.fr/login/" target="_blank" rel="noopener noreferrer" class="inline-block px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs">
           Connexion Immédiate ➔
         </a>
       </div>
@@ -84,7 +83,6 @@
             @toggle-protection="toggleProtectionMode"
             @enroll-vps="showEnrollModal = true"
             @toggle-theme="toggleCockpitTheme"
-            @logout="logout"
           />
 
           <!-- BANNIÈRE / MODULE DE REPLAY COMPARATIF PHP2SHELL (CVE-2024-4577 / CVE-2026-109618) -->
@@ -470,12 +468,25 @@ const dynamicPowerPath = computed(() => {
 
 async function logout() {
   showAccountModal.value = false;
+  if (props.isDemo) {
+    if (typeof window !== 'undefined') {
+      const isFr = window.location.pathname.startsWith('/fr');
+      window.location.href = isFr ? '/fr/demo' : '/demo';
+    }
+    return;
+  }
   await bffLogout();
 }
 
 function getPathForNav(view: string): string {
-  const prefix = props.isDemo ? '/demo' : '/app';
-  if (view === 'dashboard') return props.isDemo ? '/demo' : '/app/';
+  const isFr = typeof window !== 'undefined' && window.location.pathname.startsWith('/fr');
+  const demoPrefix = isFr ? '/fr/demo' : '/demo';
+  if (props.isDemo) {
+    if (view === 'dashboard') return demoPrefix;
+    return `${demoPrefix}?tab=${view}`;
+  }
+  const prefix = '/app';
+  if (view === 'dashboard') return '/app/';
   if (view === 'triage') return `${prefix}/triage`;
   if (view === 'streams' || view === 'security') return `${prefix}/actions/security`;
   if (view === 'telemetry' || view === 'green') return `${prefix}/actions/green`;
@@ -641,12 +652,18 @@ onMounted(async () => {
       if (e.state && e.state.nav) {
         activeNav.value = e.state.nav;
       } else {
-        const curPath = window.location.pathname.replace(/\/$/, '');
-        if (curPath.endsWith('/triage')) activeNav.value = 'triage';
-        else if (curPath.endsWith('/actions/security')) activeNav.value = 'streams';
-        else if (curPath.endsWith('/actions/green')) activeNav.value = 'telemetry';
-        else if (curPath.endsWith('/actions/compliance')) activeNav.value = 'controls';
-        else activeNav.value = 'dashboard';
+        const urlParams = new URLSearchParams(window.location.search);
+        const tab = urlParams.get('tab');
+        if (tab) {
+          activeNav.value = tab;
+        } else {
+          const curPath = window.location.pathname.replace(/\/$/, '');
+          if (curPath.endsWith('/triage')) activeNav.value = 'triage';
+          else if (curPath.endsWith('/actions/security')) activeNav.value = 'streams';
+          else if (curPath.endsWith('/actions/green')) activeNav.value = 'telemetry';
+          else if (curPath.endsWith('/actions/compliance')) activeNav.value = 'controls';
+          else activeNav.value = 'dashboard';
+        }
       }
     };
     window.addEventListener('popstate', handlePopState);

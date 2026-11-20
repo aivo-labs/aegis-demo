@@ -100,16 +100,6 @@
             </div>
           </div>
         </div>
-
-        <!-- 5. Bouton Déconnexion -->
-        <button 
-          @click="$emit('logout')"
-          class="w-9 h-9 rounded-xl bg-slate-900 hover:bg-rose-500/15 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-rose-300 transition-all cursor-pointer flex items-center justify-center shadow-sm"
-          :title="t.cockpit.header.logoutTooltip"
-          aria-label="Déconnexion"
-        >
-          <span class="text-base">🚪</span>
-        </button>
       </div>
     </header>
 
