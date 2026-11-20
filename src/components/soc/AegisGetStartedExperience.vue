@@ -122,10 +122,10 @@
 
               <div class="p-4 rounded-2xl bg-slate-950/80 border border-slate-800">
                 <div class="text-[11px] text-slate-400 mb-1">
-                  {{ isFr ? 'Score Sécurité & Headers' : 'Security & Headers Score' }}
+                  {{ isFr ? 'Score Sécurité Global (Headers & CVE)' : 'Global Security Score (Headers & CVE)' }}
                 </div>
                 <div class="flex items-baseline gap-2">
-                  <span :class="['text-2xl font-extrabold', auditResult.security_score >= 75 ? 'text-emerald-400' : 'text-amber-400']">
+                  <span :class="['text-2xl font-extrabold', auditResult.security_score >= 75 ? 'text-emerald-400' : (auditResult.security_score >= 50 ? 'text-amber-400' : 'text-rose-400')]">
                     {{ auditResult.security_score }} / 100
                   </span>
                   <span class="px-2 py-0.5 rounded bg-slate-800 text-white text-xs font-bold">Grade {{ auditResult.security_grade }}</span>

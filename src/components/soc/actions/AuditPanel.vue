@@ -51,9 +51,9 @@
         </div>
 
         <div class="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80">
-          <div class="text-[11px] text-slate-400 mb-1">Score Sécurité &amp; Headers</div>
+          <div class="text-[11px] text-slate-400 mb-1">Score Sécurité Global (Headers &amp; CVE)</div>
           <div class="flex items-baseline gap-2">
-            <span :class="['text-2xl font-extrabold', auditResult.security_score >= 75 ? 'text-emerald-400' : 'text-amber-400']">
+            <span :class="['text-2xl font-extrabold', auditResult.security_score >= 75 ? 'text-emerald-400' : (auditResult.security_score >= 50 ? 'text-amber-400' : 'text-rose-400')]">
               {{ auditResult.security_score }} / 100
             </span>
             <span class="px-2 py-0.5 rounded bg-slate-800 text-white text-xs font-bold">Grade {{ auditResult.security_grade }}</span>
